@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="edu.uta.cse5320.suitcasemanager.MainActivity">
+
+    <!--<TextView-->
+        <!--android:text="Email"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/textView"-->
+        <!--android:textAppearance="@style/TextAppearance.AppCompat.Body1"-->
+        <!--android:textStyle="normal|bold"-->
+        <!--android:textSize="18sp"-->
+        <!--android:layout_alignBottom="@+id/editTextUsername"-->
+        <!--android:layout_alignParentStart="true" />-->
+
+    <!--<EditText-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:inputType="textPersonName"-->
+        <!--android:ems="10"-->
+        <!--android:id="@+id/editTextUsername"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:layout_marginTop="26dp" />-->
+
+    <!--<EditText-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:inputType="textPersonName"-->
+        <!--android:ems="10"-->
+        <!--android:id="@+id/editTextPassword"-->
+        <!--android:layout_marginTop="59dp"-->
+        <!--android:layout_below="@+id/editTextUsername"-->
+        <!--android:layout_alignParentEnd="true" />-->
+
+    <!--<TextView-->
+        <!--android:text="Password"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/textView2"-->
+        <!--android:textAppearance="@style/TextAppearance.AppCompat.Body1"-->
+        <!--android:textStyle="normal|bold"-->
+        <!--android:textSize="18sp"-->
+        <!--android:layout_alignBottom="@+id/editTextPassword"-->
+        <!--android:layout_alignParentStart="true" />-->
+
+    <!--<Button-->
+        <!--android:text="Register"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/buttonRegister"-->
+        <!--android:layout_marginTop="75dp"-->
+        <!--android:layout_below="@+id/editTextPassword"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:onClick="onRegisterPress"/>-->
+
+    <!--<Button-->
+        <!--android:text="Login"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/buttonlogin"-->
+        <!--android:layout_alignBaseline="@+id/buttonRegister"-->
+        <!--android:layout_alignBottom="@+id/buttonRegister"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:onClick="onLoginPress"/>-->
+
+    <!--<Button-->
+        <!--android:text="logout"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignTop="@+id/buttonlogin"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:layout_marginStart="15dp"-->
+        <!--android:id="@+id/buttonLogut"-->
+        <!--android:onClick="onSignOut" />-->
+
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/sign_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="57dp"/>
+
+</RelativeLayout>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="edu.uta.cse5320.suitcasemanager.AddTripActivity">
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="25dp"
+        android:layout_marginTop="25dp"
+        android:text="Add/Edit Trip Details"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/textView4">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="10dp"
+            android:id="@+id/relativeLayout">
+
+            <TextView
+                android:id="@+id/textViewTripName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="30dp"
+                android:text="Trip Name"
+                android:textSize="18sp"
+                android:layout_marginLeft="20dp"/>
+
+            <EditText
+                android:id="@+id/editTextTripName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/textViewTripName"
+                android:layout_alignBottom="@+id/textViewTripName"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="17dp"
+                android:editable="false"
+                android:ems="10"
+                android:hint="Trip Name"
+                android:inputType="textPersonName" />
+
+            <TextView
+                android:id="@+id/textViewTripStartDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignTop="@+id/textViewTripName"
+                android:layout_marginTop="50dp"
+                android:text="Trip Start Date"
+                android:textSize="18sp"
+                android:layout_marginLeft="20dp"/>
+
+            <EditText
+                android:id="@+id/editTextTripStartDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text=""
+                android:layout_alignBaseline="@+id/textViewTripStartDate"
+                android:layout_alignBottom="@+id/textViewTripStartDate"
+                android:layout_alignEnd="@+id/editTextTripName" />
+
+            <TextView
+                android:id="@+id/textViewTripEndDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignTop="@+id/textViewTripStartDate"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="50dp"
+                android:text="Trip End Date"
+                android:textSize="18sp" />
+
+            <EditText
+                android:id="@+id/editTextTripEndDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text=""
+                android:layout_alignBaseline="@+id/textViewTripEndDate"
+                android:layout_alignBottom="@+id/textViewTripEndDate"
+                android:layout_alignEnd="@+id/editTextTripStartDate" />
+
+            <TextView
+                android:id="@+id/textViewTripAirline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignTop="@+id/textViewTripEndDate"
+                android:layout_marginTop="50dp"
+                android:text="Trip Airline"
+                android:textSize="18sp"
+                android:layout_marginLeft="20dp"/>
+
+            <EditText
+                android:id="@+id/editTextTripAirline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text=""
+                android:layout_alignBaseline="@+id/textViewTripAirline"
+                android:layout_alignBottom="@+id/textViewTripAirline"
+                android:layout_alignEnd="@+id/editTextTripEndDate" />
+
+            <TextView
+                android:id="@+id/textViewTicketDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignTop="@+id/textViewTripAirline"
+                android:layout_marginTop="50dp"
+                android:text="Trip Details"
+                android:textSize="18sp"
+                android:layout_marginLeft="20dp"/>
+
+            <EditText
+                android:id="@+id/editTextTripDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="100dp"
+                android:ems="10"
+                android:inputType="textMultiLine"
+                android:layout_below="@+id/textViewTicketDetails"
+                android:layout_marginTop="13dp"
+                android:layout_alignEnd="@+id/editTextTripAirline"
+                android:layout_alignStart="@+id/textViewTicketDetails" />
+
+            <Button
+                android:id="@+id/saveTripData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/editTextTripDetails"
+                android:layout_below="@+id/editTextTripDetails"
+                android:text="Save" />
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

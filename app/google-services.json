@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "681643837475",
+    "firebase_url": "https://suitcasemanager-e6d35.firebaseio.com",
+    "project_id": "suitcasemanager-e6d35",
+    "storage_bucket": "suitcasemanager-e6d35.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:681643837475:android:040027ef125f927b",
+        "android_client_info": {
+          "package_name": "edu.uta.cse5320.suitcasemanager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "681643837475-b30ruidj2m8vctcdu1t4s548d7gdcs1c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.uta.cse5320.suitcasemanager",
+            "certificate_hash": "3d08547ed0e5b6858084a1e6b053a37d7c9c3e37"
+          }
+        },
+        {
+          "client_id": "681643837475-k7m2ggfic20876f4gir78hgu6l6e4knd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_zTJUbMciuEibtLhYk2pwpqEPgxMWnjg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "681643837475-k7m2ggfic20876f4gir78hgu6l6e4knd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
