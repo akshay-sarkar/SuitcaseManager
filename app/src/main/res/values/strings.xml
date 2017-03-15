@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SuitcaseManager</string>
+    <string name="title_activity_bag_list">BagListActivity</string>
 </resources>

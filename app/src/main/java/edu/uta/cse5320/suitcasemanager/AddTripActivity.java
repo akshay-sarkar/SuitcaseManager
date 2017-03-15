@@ -53,7 +53,7 @@ public class AddTripActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         /* Getting Data from the data */
         Intent intent = getIntent();
-        String message = intent.getStringExtra(AccountActivity.EXTRA_MESSAGE);
+        String message = intent.getStringExtra(TripListActivity.EXTRA_MESSAGE);
         //Toast.makeText(ctx, "Message::  "+message, Toast.LENGTH_SHORT).show();
 
 
@@ -142,7 +142,7 @@ public class AddTripActivity extends AppCompatActivity {
     }
 
     public void clearFormAndBack(){
-        Intent intent = new Intent(ctx, AccountActivity.class);
+        Intent intent = new Intent(ctx, TripListActivity.class);
         startActivity(intent);
     }
 

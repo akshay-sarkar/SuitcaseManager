@@ -37,7 +37,7 @@ import java.util.Map;
 
 import edu.uta.cse5320.dao.TripData;
 
-public class AccountActivity extends AppCompatActivity {
+public class TripListActivity extends AppCompatActivity {
 
 
     private Button mLogoutBtn;
@@ -48,19 +48,19 @@ public class AccountActivity extends AppCompatActivity {
     private EditText editTextName, editTextPhone, editTextAge;
     private DatabaseReference myDbRef;
     private TextView mTextViewName, mTextViewAge;
-    List<String> assignmentArray ;
+    List<String> tripArray ;
     HashMap<String, String> hmap = new HashMap<String, String>();
     FirebaseUser user;
     private ListView listViewTrip;
-    String TAG = "TAG : ";
+    String TAG = "Suitcase Manager::TripScreen";
     public static final String EXTRA_MESSAGE = "edu.uta.cse5320.MESSAGE";
     ArrayAdapter<String> myAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_account);
-        assignmentArray = new ArrayList<String>();
+        setContentView(R.layout.activity_trip_list);
+        tripArray = new ArrayList<String>();
 
         mLogoutBtn = (Button) findViewById(R.id.logoutBtn);
 
@@ -89,7 +89,7 @@ public class AccountActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth){
                 if( firebaseAuth.getCurrentUser() == null){
-                    startActivity(new Intent(AccountActivity.this, MainActivity.class));
+                    startActivity(new Intent(TripListActivity.this, MainActivity.class));
                 }
             }
         };
@@ -127,7 +127,7 @@ public class AccountActivity extends AppCompatActivity {
         listViewTrip = (ListView) findViewById(R.id.listTrips);
         // initiate the listadapter
         myAdapter = new ArrayAdapter <String>(this,
-                R.layout.trip_list_layout, R.id.tripListLabelName, assignmentArray);
+                R.layout.trip_list_layout, R.id.tripListLabelName, tripArray);
 
         listViewTrip.setAdapter(myAdapter);
 
@@ -136,7 +136,7 @@ public class AccountActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
                 System.out.println(TAG+ " onChildAdded");
                 TripData tripData = dataSnapshot.getValue(TripData.class);
-                assignmentArray.add(tripData.getTripName());
+                tripArray.add(tripData.getTripName());
                 //Key - Value : TripName - f_id
                 hmap.put(tripData.getTripName(), dataSnapshot.getKey());
                 updateListView();
@@ -152,14 +152,14 @@ public class AccountActivity extends AppCompatActivity {
                 hmap.remove(oldKey);
                 hmap.put(tripName, dataSnapshot.getKey());
                 int idx=0;
-                while (idx < assignmentArray.size())  {
-                    if(assignmentArray.get(idx).equalsIgnoreCase(tripName)) {
+                while (idx < tripArray.size())  {
+                    if(tripArray.get(idx).equalsIgnoreCase(tripName)) {
                         System.out.println(TAG+" Matched ");
-                        assignmentArray.remove(idx);
+                        tripArray.remove(idx);
                     } else
                         ++idx;
                 }
-                assignmentArray.add(tripName);
+                tripArray.add(tripName);
                 updateListView();
             }
 
@@ -170,9 +170,9 @@ public class AccountActivity extends AppCompatActivity {
                 String tripName = tripData.getTripName();
                 hmap.remove(tripName);
                 int idx=0;
-                while (idx < assignmentArray.size())  {
-                    if(assignmentArray.get(idx).equalsIgnoreCase(tripName))
-                        assignmentArray.remove(idx);
+                while (idx < tripArray.size())  {
+                    if(tripArray.get(idx).equalsIgnoreCase(tripName))
+                        tripArray.remove(idx);
                     else
                         ++idx;
                 }
@@ -191,12 +191,13 @@ public class AccountActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final TextView tv = (TextView) view.findViewById(R.id.tripListLabelName);
                 final ImageView imageViewDelete = (ImageView) view.findViewById(R.id.imageViewDelete);
+                final ImageView imageViewEdit = (ImageView) view.findViewById(R.id.imageViewEdit);
                 tv.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         //int position = listViewTrip.getPositionForView((View) v.getParent());
                         Toast.makeText(ctx, "Clicked on  - "+ tv.getText().toString(), Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(ctx, AddTripActivity.class);
+                        Intent intent = new Intent(ctx, BagListActivity.class);
                         intent.putExtra(EXTRA_MESSAGE, hmap.get(tv.getText().toString()));
                         startActivity(intent);
                     }
@@ -209,6 +210,18 @@ public class AccountActivity extends AppCompatActivity {
                         String key = hmap.get(tv.getText().toString());
                         System.out.println(TAG+" Icon of  - "+ tv.getText().toString() +"Delete :"+key);
                         myDbRef.child(key).setValue(null);
+                    }
+                });
+                imageViewEdit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //int position = listViewTrip.getPositionForView((View) v.getParent());
+                        ViewGroup row = (ViewGroup) v.getParent();
+                        TextView textView = (TextView) row.findViewById(R.id.tripListLabelName);
+                        Toast.makeText(ctx, "Clicked on  - "+ textView.getText().toString(), Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(ctx, AddTripActivity.class);
+                        intent.putExtra(EXTRA_MESSAGE, hmap.get(textView.getText().toString()));
+                        startActivity(intent);
                     }
                 });
             }
@@ -224,7 +237,7 @@ public class AccountActivity extends AppCompatActivity {
     private void updateListView(){
         myAdapter.notifyDataSetChanged();
         listViewTrip.invalidate();
-        Log.d(TAG, "Length: " + assignmentArray.size());
+        //Log.d(TAG, "Length: " + tripArray.size());
     }
 
     public static Object getKeyFromValue(Map hm, Object value) {
