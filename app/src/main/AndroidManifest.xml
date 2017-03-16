@@ -25,10 +25,10 @@
             android:name=".BagListActivity"
             android:label="@string/title_activity_bag_list"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-
+        <!-- https://developer.android.com/reference/android/support/v4/content/FileProvider.html -->
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.example.android.fileprovider"
+            android:authorities="edu.uta.cse5320.suitcasemanager.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
