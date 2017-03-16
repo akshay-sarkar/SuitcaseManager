@@ -3,9 +3,7 @@ package edu.uta.cse5320.suitcasemanager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.ThumbnailUtils;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -17,7 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -42,43 +39,54 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Iterator;
+import java.util.Map;
 
+import edu.uta.cse5320.dao.BagAdapter;
 import edu.uta.cse5320.dao.BagData;
-import edu.uta.cse5320.dao.TripData;
+import edu.uta.cse5320.dao.BagHelper;
 
 public class BagListActivity extends AppCompatActivity {
 
     FirebaseUser user;
     private FirebaseAuth mAuth;
     private Context ctx;
-    private DatabaseReference myDbRef;
+    private DatabaseReference myDbRef, imageURLRef;
     private StorageReference mStorageRef;
     private ListView listBagTrip;
-    ArrayAdapter<String> myAdapter;
+    BagAdapter myAdapter;
     HashMap<String, String> hmap ;
-    List<String> bagArray ;
+    //List<String> bagArray ;
     String TAG = "Suitcase Manager::BagScreen";
-    int index = 1;
+    int index = 1, i = 1;
 
     private static int CAMERA_REQUEST_CODE = 200;
     private ProgressDialog progressDialog;
     String mCurrentPhotoPath;
     Uri photoURI;
     ImageView lastTouchedImageView;
+    private String tripID ,bagID;
+    private BagHelper bagHelperDB;
+    ArrayList<BagData> bagDataList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bag_list);
 
+        //Progress for operations
         progressDialog = new ProgressDialog(this);
 
         /* Getting Data from the data */
         Intent intent = getIntent();
-        String tripID = intent.getStringExtra(TripListActivity.EXTRA_MESSAGE);
-        //Toast.makeText(ctx, "Message::  "+message, Toast.LENGTH_SHORT).show();
-        bagArray = new ArrayList<String>();
+        tripID = intent.getStringExtra(TripListActivity.EXTRA_MESSAGE);
+
+        bagHelperDB = new BagHelper(this);
+        bagDataList = new ArrayList<>();
+        Cursor data = bagHelperDB.getListContents();
+        int numRows = data.getCount();
+
+        //bagArray = new ArrayList<>();
         hmap = new HashMap<String, String>();
 
         mAuth = FirebaseAuth.getInstance();
@@ -93,14 +101,46 @@ public class BagListActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
                 System.out.println(TAG+ " onChildAdded");
                 BagData bagData = dataSnapshot.getValue(BagData.class);
-                bagArray.add(bagData.getBagName());
+                //bagArray.add(bagData.getBagName());
                 //Key - Value : TripName - f_id
                 hmap.put(bagData.getBagName(), dataSnapshot.getKey());
+
+                /* Inserting data in DB*/
+                long id = bagHelperDB.addData(bagData.getBagName(), bagData.getItemQuantity(), bagData.getImageUrl1(),bagData.getImageUrl2(),bagData.getImageUrl3() );
+                if(id == -1){
+                    System.out.println("Not Inserted");
+                }
+
+                /* Adding in List */
+                bagDataList.add(bagData);
                 updateListView();
             }
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {
                 System.out.println(TAG + "onChildChanged" );
+                BagData bagData = dataSnapshot.getValue(BagData.class);
+
+                if(bagData != null){
+
+                    /* Updating data in DB*/
+                    boolean flag = bagHelperDB.updateDetails(bagData.getId(), bagData.getBagName(), bagData.getItemQuantity(), bagData.getImageUrl1(),bagData.getImageUrl2(),bagData.getImageUrl3());
+                    //lastTouchedImageView
+                    System.out.println(TAG + "flag ="+ flag );
+                    /* updating in List */
+                    if(flag){
+                        Iterator<BagData> itr = bagDataList.iterator();
+                        while (itr.hasNext()) {
+                            BagData element = itr.next();
+                            if(element.getId() == bagData.getId()) {
+                                bagDataList.remove(element);
+                                break;
+                            }
+                        }
+                        bagDataList.add( bagData);
+                        myAdapter.notifyDataSetChanged();
+                        updateListView();
+                    }
+                }
             }
 
             @Override
@@ -115,13 +155,15 @@ public class BagListActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {}
 
         });
-         /* List Trip Data */
+
+
+        /* List Trip Data */
         listBagTrip = (ListView) findViewById(R.id.listBags);
         // initiate the listadapter
-        myAdapter = new ArrayAdapter<String>(this,
-                R.layout.bag_list_layout, R.id.tripBagLabelName, bagArray);
-
+        myAdapter = new BagAdapter(this, R.layout.bag_list_layout, bagDataList);
+        myAdapter.setNotifyOnChange(true);
         listBagTrip.setAdapter(myAdapter);
+
 
         /* Floating Button for moving to Add Bags */
         FloatingActionButton myFab = (FloatingActionButton) findViewById(R.id.floatingButtonAddBag);
@@ -135,19 +177,27 @@ public class BagListActivity extends AppCompatActivity {
         listBagTrip.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final ImageView imageViewBagPicture1 = (ImageView) view.findViewById(R.id.imageViewBagPicture1);
-                imageViewBagPicture1.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ViewGroup row = (ViewGroup) v.getParent();
-                        TextView textView = (TextView) row.findViewById(R.id.tripBagLabelName);
-                        String key = hmap.get(textView.getText().toString());
-                        System.out.println(TAG+" Icon of  - "+ textView.getText().toString() +"Delete :"+key);
-                       //myDbRef.child(key).setValue(null);
-                        dispatchTakePictureIntent(imageViewBagPicture1);
+                ImageView imageViewBagPicture1 = (ImageView) view.findViewById(R.id.imageViewBagPicture1);
+                ImageView imageViewBagPicture2 = (ImageView) view.findViewById(R.id.imageViewBagPicture2);
+                ImageView imageViewBagPicture3 = (ImageView) view.findViewById(R.id.imageViewBagPicture3);
+                final ImageView[] imageViews = {imageViewBagPicture1, imageViewBagPicture2, imageViewBagPicture3};
 
-                    }
-                });
+                for( int j=0; j<imageViews.length; j++){
+                    final int index = j;
+                    imageViews[j].setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            ViewGroup row = (ViewGroup) v.getParent();
+                            TextView textView = (TextView) row.findViewById(R.id.tripBagLabelName);
+                            String bagID = hmap.get(textView.getText().toString());
+                            System.out.println(TAG+" Icon of  - "+ textView.getText().toString() +"Delete : "+bagID);
+                            imageURLRef = myDbRef.child(bagID);
+                            //myDbRef.child(key).setValue(null);
+                            dispatchTakePictureIntent(imageViews[index]);
+
+                        }
+                    });
+                }
             }
         });
     }
@@ -199,26 +249,28 @@ public class BagListActivity extends AppCompatActivity {
             progressDialog.setMessage("Uploading Image..");
             progressDialog.show();
 
-//            Bundle extras = data.getExtras();
-//            Bitmap imageBitmap = (Bitmap) extras.get("data");
-//            //mImageView.setImageBitmap(imageBitmap);
-//
-//            Uri uri = data.getData();
             FirebaseUser user = mAuth.getCurrentUser();
-            StorageReference filePath = mStorageRef.child("Photos").child(user.getUid()).child(photoURI.getLastPathSegment());
+            StorageReference filePath = mStorageRef.child("Photos").child(user.getUid()).child(tripID).child(photoURI.getLastPathSegment());
 
             filePath.putFile(photoURI)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         // Get a URL to the uploaded content
-                        //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
+
+                        //Updating the URL in Database
+                        Map<String, Object> hopperUpdates = new HashMap<String, Object>();
+                        hopperUpdates.put("imageUrl1", downloadUrl.toString());
+
+                        imageURLRef.updateChildren(hopperUpdates);
+
                         progressDialog.dismiss();
-                        Toast.makeText(ctx, "Uploading Finished...", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ctx, "Image Uploade Finished...", Toast.LENGTH_SHORT).show();
 
                         /* Unable to access the file from the File System */
                         /* At this point of time, i have variable photoURI, i used for uploading the image on firebase. */
-
+                    /*
                         // Trial-1
                         File imgFile = new  File("file://edu.uta.cse5320.suitcasemanager/files/Pictures/JPEG_20170315_190100_156454929.jpg");
 
@@ -227,12 +279,12 @@ public class BagListActivity extends AppCompatActivity {
                         File newFile = new File(imagePath, "JPEG_20170315_190100_156454929.jpg");
                         //newFile has Path - /data/user/0/edu.uta.cse5320.suitcasemanager/files/Picture/JPEG_20170315_190100_156454929.jpg
 
-                        /* I need to create a Bitmap Image later on ..*/
+                        // I need to create a Bitmap Image later on ..
                         if(imgFile.exists()) {
                             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
                             lastTouchedImageView.setImageBitmap(myBitmap);
                         }
-
+                    */
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -247,18 +299,21 @@ public class BagListActivity extends AppCompatActivity {
 
     public void createBags(){
 
-        String editBagName = "Bag Item-"+index;//editName.getText().toString();
+        String editBagName = "Bag Item-"+index;
         ++index;
         int editBagItems = 12;//editTextTripStartDate.getText().toString();
 
-        BagData bagData = new BagData(editBagName, editBagItems);
+        long id = bagHelperDB.addData(editBagName, editBagItems, "", "", "");
+        if(id == -1){
+            System.out.println("Not Inserted");
+        }
+        BagData bagData = new BagData(id, editBagName, editBagItems, "", "", "");
         myDbRef.push().setValue(bagData);
-        Toast.makeText(ctx, "Bag Created", Toast.LENGTH_SHORT).show();
+        Toast.makeText(ctx, "Bag Added", Toast.LENGTH_SHORT).show();
     }
     
     private void updateListView(){
         myAdapter.notifyDataSetChanged();
         listBagTrip.invalidate();
-        //Log.d(TAG, "Length: " + tripArray.size());
     }
 }

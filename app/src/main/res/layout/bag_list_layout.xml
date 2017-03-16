@@ -20,7 +20,11 @@
         android:src="@drawable/ic_add_a_photo_black_48dp"
         android:layout_marginStart="15dp"
         android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:minHeight="50dp"
+        android:maxHeight="50dp"
+        android:maxWidth="50dp"
+        android:minWidth="50dp" />
 
     <ImageView
         android:id="@+id/imageViewBagPicture2"
@@ -29,15 +33,23 @@
         android:src="@drawable/ic_add_a_photo_black_48dp"
         android:layout_alignParentTop="true"
         android:layout_toStartOf="@+id/imageViewBagPicture1"
-        android:layout_marginStart="15dp" />
+        android:layout_marginStart="15dp"
+        android:minHeight="50dp"
+        android:maxHeight="50dp"
+        android:maxWidth="50dp"
+        android:minWidth="50dp"/>
 
     <ImageView
         android:id="@+id/imageViewBagPicture3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_add_a_photo_black_48dp"
         android:layout_alignParentTop="true"
+        android:layout_marginStart="15dp"
         android:layout_toStartOf="@+id/imageViewBagPicture2"
-        android:layout_marginStart="15dp"/>
+        android:minHeight="50dp"
+        android:maxHeight="50dp"
+        android:maxWidth="50dp"
+        android:minWidth="50dp"
+        android:src="@drawable/ic_add_a_photo_black_48dp" />
 
 </RelativeLayout>
