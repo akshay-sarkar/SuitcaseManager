@@ -216,16 +216,16 @@ public class BagListActivity extends AppCompatActivity {
                         progressDialog.dismiss();
                         Toast.makeText(ctx, "Uploading Finished...", Toast.LENGTH_SHORT).show();
 
-                        /* Not Able to access the file from the File System */
-                        /* At this point of time, i have variable photoURI */
+                        /* Unable to access the file from the File System */
+                        /* At this point of time, i have variable photoURI, i used for uploading the image on firebase. */
 
-                       // Trial-1
+                        // Trial-1
                         File imgFile = new  File("file://edu.uta.cse5320.suitcasemanager/files/Pictures/JPEG_20170315_190100_156454929.jpg");
 
                         //Trial-2
                         File imagePath = new File(ctx.getFilesDir(), "images");
-                        File newFile = new File(imagePath, "JPEG_20170315_194413_1570892274.jpg");
-                        //newFile has Path - "/data/user/0/edu.uta.cse5320.suitcasemanager/files/Pictures/JPEG_20170315_194413_1570892274.jpg"
+                        File newFile = new File(imagePath, "JPEG_20170315_190100_156454929.jpg");
+                        //newFile has Path - /data/user/0/edu.uta.cse5320.suitcasemanager/files/Picture/JPEG_20170315_190100_156454929.jpg
 
                         /* I need to create a Bitmap Image later on ..*/
                         if(imgFile.exists()) {
