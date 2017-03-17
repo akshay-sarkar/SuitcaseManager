@@ -6,6 +6,7 @@ package edu.uta.cse5320.dao;
 
 public class TripData {
 
+    private long id;
     private String tripName;
     private String tripStartDate;
     private String tripEndDate;
@@ -21,6 +22,23 @@ public class TripData {
         this.tripEndDate = tripEndDate;
         this.tripAirlineName = tripAirlineName;
         this.tripDetails = tripDetails;
+    }
+
+    public TripData(long id, String tripName, String tripStartDate, String tripEndDate, String tripAirlineName, String tripDetails) {
+        this.id = id;
+        this.tripName = tripName;
+        this.tripStartDate = tripStartDate;
+        this.tripEndDate = tripEndDate;
+        this.tripAirlineName = tripAirlineName;
+        this.tripDetails = tripDetails;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getTripName() {

@@ -32,10 +32,15 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import edu.uta.cse5320.dao.BagAdapter;
+import edu.uta.cse5320.dao.BagData;
+import edu.uta.cse5320.dao.TripAdapter;
 import edu.uta.cse5320.dao.TripData;
+import edu.uta.cse5320.dao.TripHelper;
 
 public class TripListActivity extends AppCompatActivity {
 
@@ -48,25 +53,151 @@ public class TripListActivity extends AppCompatActivity {
     private EditText editTextName, editTextPhone, editTextAge;
     private DatabaseReference myDbRef;
     private TextView mTextViewName, mTextViewAge;
-    List<String> tripArray ;
+    //List<String> tripArray ;
     HashMap<String, String> hmap = new HashMap<String, String>();
     FirebaseUser user;
     private ListView listViewTrip;
     String TAG = "Suitcase Manager::TripScreen";
     public static final String EXTRA_MESSAGE = "edu.uta.cse5320.MESSAGE";
     ArrayAdapter<String> myAdapter;
+    TripAdapter myTripAdapter;
+    ArrayList<TripData> tripDataList;
+    TripHelper tripHelperDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_list);
-        tripArray = new ArrayList<String>();
+        //tripArray = new ArrayList<String>();
 
         mLogoutBtn = (Button) findViewById(R.id.logoutBtn);
 
         mAuth = FirebaseAuth.getInstance();
         ctx = getApplicationContext();
         user = mAuth.getCurrentUser();
+
+        tripDataList = new ArrayList<>();
+        tripHelperDB = new TripHelper(this);
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        myDbRef = database.getReference("test").child(user.getUid()).child("Trips");
+        //dbUpdates(myDbRef);
+        if(savedInstanceState == null){
+            // everything else that doesn't update UI
+            System.out.println("-------------- onCreate Test ----------");
+        }
+        System.out.println("-------------- onCreate ----------");
+        myDbRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
+                System.out.println(TAG+ " onChildAdded");
+                TripData tripData = dataSnapshot.getValue(TripData.class);
+                //tripArray.add(tripData.getTripName());
+                //Key - Value : TripName - f_id
+                hmap.put(tripData.getTripName(), dataSnapshot.getKey());
+
+                /* Inserting data in DB only when not existed*/
+
+                int count = tripHelperDB.getListContent(tripData.getId());
+                if(count <= 0){
+                    System.out.println("Not Inserted!! Inserting Now");
+                    tripHelperDB.addDataCompleteSync(tripData.getId(), tripData.getTripName(), tripData.getTripStartDate(), tripData.getTripEndDate(),tripData.getTripAirlineName(),tripData.getTripDetails());
+                }
+
+                /* Adding in List */
+                tripDataList.add(tripData);
+
+                updateListView();
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {
+                System.out.println(TAG + "onChildChanged" + dataSnapshot.getKey() +" Value :"+ dataSnapshot.getValue().toString());
+                TripData tripData = dataSnapshot.getValue(TripData.class);
+                if(tripData != null){
+                    //String tripName = tripData.getTripName();
+                    Object oldKey = getKeyFromValue(hmap, dataSnapshot.getKey());
+                    //Key - Value : TripName - f_id
+                    hmap.remove(oldKey);
+                    hmap.put(tripData.getTripName(), dataSnapshot.getKey());
+//                    int idx=0;
+//                    while (idx < tripArray.size())  {
+//                        if(tripArray.get(idx).equalsIgnoreCase(tripName)) {
+//                            System.out.println(TAG+" Matched ");
+//                            tripArray.remove(idx);
+//                        } else
+//                            ++idx;
+//                    }
+//                    tripArray.add(tripName);
+
+                    // Refactor the above code
+                    /* Updating data in DB*/
+                    boolean flag = tripHelperDB.updateDetails(tripData.getId(), tripData.getTripName(), tripData.getTripStartDate(), tripData.getTripEndDate(),tripData.getTripAirlineName(),tripData.getTripDetails());
+                    //lastTouchedImageView
+                    System.out.println(TAG + "flag ="+ flag );
+                    /* updating in List */
+                    if(flag){
+                        Iterator<TripData> itr = tripDataList.iterator();
+                        while (itr.hasNext()) {
+                            TripData element = itr.next();
+                            if(element.getId() == tripData.getId()) {
+                                tripDataList.remove(element);
+                                break;
+                            }
+                        }
+                        tripDataList.add(tripData);
+                        myTripAdapter.notifyDataSetChanged();
+                        updateListView();
+                    }
+                }
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                System.out.println(TAG + " onChildRemoved");
+                TripData tripData = dataSnapshot.getValue(TripData.class);
+
+                //Update Database and List Here
+                boolean flag = tripHelperDB.deleteContent(tripData.getId());
+
+                if(flag){
+                    hmap.remove(tripData.getTripName());
+                    System.out.println("Whats is flag : "+ flag);
+                    Iterator<TripData> itr = tripDataList.iterator();
+                    while (itr.hasNext()) {
+                        TripData element = itr.next();
+                        if(element.getId() == tripData.getId()) {
+                            tripDataList.remove(element);
+                            break;
+                        }
+                    }
+
+                    updateListView();
+                    myTripAdapter.notifyDataSetChanged();
+                }
+//                int idx=0;
+//                while (idx < tripArray.size())  {
+//                    if(tripArray.get(idx).equalsIgnoreCase(tripName))
+//                        tripArray.remove(idx);
+//                    else
+//                        ++idx;
+//                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String prevChildKey) {}
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+
+        /* List Trip Data */
+        listViewTrip = (ListView) findViewById(R.id.listTrips);
+        // initiate the listadapter
+        myTripAdapter = new TripAdapter(this, R.layout.trip_list_layout, tripDataList);
+        myTripAdapter.setNotifyOnChange(true);
+        listViewTrip.setAdapter(myTripAdapter);
 
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -109,11 +240,6 @@ public class TripListActivity extends AppCompatActivity {
 //                saveUserInformation();
 //            }
 //        });
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        myDbRef = database.getReference("test").child(user.getUid()).child("Trips");
-        //dbUpdates(myDbRef);
-
         /* Floating Button for moving to Add Trip */
         FloatingActionButton myFab = (FloatingActionButton) findViewById(R.id.floatingButtonAddTrip);
         myFab.setOnClickListener(new View.OnClickListener() {
@@ -121,69 +247,6 @@ public class TripListActivity extends AppCompatActivity {
                 Intent intent = new Intent(ctx, AddTripActivity.class);
                 startActivity(intent);
             }
-        });
-
-        /* List Trip Data */
-        listViewTrip = (ListView) findViewById(R.id.listTrips);
-        // initiate the listadapter
-        myAdapter = new ArrayAdapter <String>(this,
-                R.layout.trip_list_layout, R.id.tripListLabelName, tripArray);
-
-        listViewTrip.setAdapter(myAdapter);
-
-        myDbRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
-                System.out.println(TAG+ " onChildAdded");
-                TripData tripData = dataSnapshot.getValue(TripData.class);
-                tripArray.add(tripData.getTripName());
-                //Key - Value : TripName - f_id
-                hmap.put(tripData.getTripName(), dataSnapshot.getKey());
-                updateListView();
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {
-                System.out.println(TAG + "onChildChanged" + dataSnapshot.getKey() +" Value :"+ dataSnapshot.getValue().toString());
-                TripData tripData = dataSnapshot.getValue(TripData.class);
-                String tripName = tripData.getTripName();
-                Object oldKey = getKeyFromValue(hmap, dataSnapshot.getKey());
-                //Key - Value : TripName - f_id
-                hmap.remove(oldKey);
-                hmap.put(tripName, dataSnapshot.getKey());
-                int idx=0;
-                while (idx < tripArray.size())  {
-                    if(tripArray.get(idx).equalsIgnoreCase(tripName)) {
-                        System.out.println(TAG+" Matched ");
-                        tripArray.remove(idx);
-                    } else
-                        ++idx;
-                }
-                tripArray.add(tripName);
-                updateListView();
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                System.out.println(TAG + "onChildRemoved");
-                TripData tripData = dataSnapshot.getValue(TripData.class);
-                String tripName = tripData.getTripName();
-                hmap.remove(tripName);
-                int idx=0;
-                while (idx < tripArray.size())  {
-                    if(tripArray.get(idx).equalsIgnoreCase(tripName))
-                        tripArray.remove(idx);
-                    else
-                        ++idx;
-                }
-                updateListView();
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String prevChildKey) {}
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
         });
 
         listViewTrip.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -208,8 +271,11 @@ public class TripListActivity extends AppCompatActivity {
                         ViewGroup row = (ViewGroup) v.getParent();
                         TextView textView = (TextView) row.findViewById(R.id.tripListLabelName);
                         String key = hmap.get(tv.getText().toString());
-                        System.out.println(TAG+" Icon of  - "+ tv.getText().toString() +"Delete :"+key);
-                        myDbRef.child(key).setValue(null);
+                        System.out.println(TAG+" Icon of  - "+ tv.getText().toString() +" Delete :"+key);
+                        if(!key.isEmpty()){
+                            myDbRef.child(key).setValue(null);
+                        }
+
                     }
                 });
                 imageViewEdit.setOnClickListener(new View.OnClickListener() {
@@ -235,9 +301,8 @@ public class TripListActivity extends AppCompatActivity {
     }
 
     private void updateListView(){
-        myAdapter.notifyDataSetChanged();
+        myTripAdapter.notifyDataSetChanged();
         listViewTrip.invalidate();
-        //Log.d(TAG, "Length: " + tripArray.size());
     }
 
     public static Object getKeyFromValue(Map hm, Object value) {

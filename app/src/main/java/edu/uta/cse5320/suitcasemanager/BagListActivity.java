@@ -164,7 +164,6 @@ public class BagListActivity extends AppCompatActivity {
         myAdapter.setNotifyOnChange(true);
         listBagTrip.setAdapter(myAdapter);
 
-
         /* Floating Button for moving to Add Bags */
         FloatingActionButton myFab = (FloatingActionButton) findViewById(R.id.floatingButtonAddBag);
         myFab.setOnClickListener(new View.OnClickListener() {
@@ -177,27 +176,47 @@ public class BagListActivity extends AppCompatActivity {
         listBagTrip.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ImageView imageViewBagPicture1 = (ImageView) view.findViewById(R.id.imageViewBagPicture1);
-                ImageView imageViewBagPicture2 = (ImageView) view.findViewById(R.id.imageViewBagPicture2);
-                ImageView imageViewBagPicture3 = (ImageView) view.findViewById(R.id.imageViewBagPicture3);
-                final ImageView[] imageViews = {imageViewBagPicture1, imageViewBagPicture2, imageViewBagPicture3};
+                final ImageView imageViewBagPicture1 = (ImageView) view.findViewById(R.id.imageViewBagPicture1);
+                final ImageView imageViewBagPicture2 = (ImageView) view.findViewById(R.id.imageViewBagPicture2);
+                final ImageView imageViewBagPicture3 = (ImageView) view.findViewById(R.id.imageViewBagPicture3);
 
-                for( int j=0; j<imageViews.length; j++){
-                    final int index = j;
-                    imageViews[j].setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            ViewGroup row = (ViewGroup) v.getParent();
-                            TextView textView = (TextView) row.findViewById(R.id.tripBagLabelName);
-                            String bagID = hmap.get(textView.getText().toString());
-                            System.out.println(TAG+" Icon of  - "+ textView.getText().toString() +"Delete : "+bagID);
-                            imageURLRef = myDbRef.child(bagID);
-                            //myDbRef.child(key).setValue(null);
-                            dispatchTakePictureIntent(imageViews[index]);
+                imageViewBagPicture1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ViewGroup row = (ViewGroup) v.getParent();
+                        TextView textView = (TextView) row.findViewById(R.id.tripBagLabelName);
+                        String bagID = hmap.get(textView.getText().toString());
+                        System.out.println(TAG+" Icon of  - "+ textView.getText().toString() +"Delete : "+bagID);
+                        imageURLRef = myDbRef.child(bagID);
+                        //myDbRef.child(key).setValue(null);
+                        dispatchTakePictureIntent(imageViewBagPicture1);
+                    }
+                });
+                imageViewBagPicture2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ViewGroup row = (ViewGroup) v.getParent();
+                        TextView textView = (TextView) row.findViewById(R.id.tripBagLabelName);
+                        String bagID = hmap.get(textView.getText().toString());
+                        System.out.println(TAG+" Icon of  - "+ textView.getText().toString() +"Delete : "+bagID);
+                        imageURLRef = myDbRef.child(bagID);
+                        //myDbRef.child(key).setValue(null);
+                        dispatchTakePictureIntent(imageViewBagPicture2);
+                    }
+                });
+                imageViewBagPicture3.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ViewGroup row = (ViewGroup) v.getParent();
+                        TextView textView = (TextView) row.findViewById(R.id.tripBagLabelName);
+                        String bagID = hmap.get(textView.getText().toString());
+                        System.out.println(TAG+" Icon of  - "+ textView.getText().toString() +"Delete : "+bagID);
+                        imageURLRef = myDbRef.child(bagID);
+                        //myDbRef.child(key).setValue(null);
+                        dispatchTakePictureIntent(imageViewBagPicture3);
+                    }
+                });
 
-                        }
-                    });
-                }
             }
         });
     }

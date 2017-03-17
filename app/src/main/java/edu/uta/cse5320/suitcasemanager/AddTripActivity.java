@@ -22,7 +22,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.uta.cse5320.dao.TripData;
+import edu.uta.cse5320.dao.TripHelper;
 
 public class AddTripActivity extends AppCompatActivity {
 
@@ -34,6 +38,8 @@ public class AddTripActivity extends AppCompatActivity {
     private Context ctx;
     private EditText editTextTripName, editTextTripAirline, editTextTripDetails, editTextTripEndDate, editTextTripStartDate;
     private boolean isEditMode = false;
+    private TripHelper tripHelperDB;
+    private String message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,13 +59,14 @@ public class AddTripActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         /* Getting Data from the data */
         Intent intent = getIntent();
-        String message = intent.getStringExtra(TripListActivity.EXTRA_MESSAGE);
+        message = intent.getStringExtra(TripListActivity.EXTRA_MESSAGE);
         //Toast.makeText(ctx, "Message::  "+message, Toast.LENGTH_SHORT).show();
 
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
 
+        tripHelperDB = new TripHelper(this);
 
         /* Edit Case */
         if(message !=null && !message.isEmpty()){
@@ -121,13 +128,30 @@ public class AddTripActivity extends AppCompatActivity {
         String editTripAirline = editTextTripAirline.getText().toString();
         String editTripDetails = editTextTripDetails.getText().toString();
 
-        TripData tripData = new TripData(editTripName, editTripStartDate, editTripEndDate, editTripAirline, editTripDetails );
-
         if(isEditMode){
-            myDbRef.setValue(tripData);
+            TripData tripData = new TripData(editTripName, editTripStartDate, editTripEndDate, editTripAirline, editTripDetails );
+
+            //Updating the URL in Database
+            Map<String, Object> updateTripDetails = new HashMap<String, Object>();
+            updateTripDetails.put("tripName", editTripName);
+            updateTripDetails.put("tripStartDate", editTripStartDate);
+            updateTripDetails.put("tripEndDate", editTripEndDate);
+            updateTripDetails.put("tripAirlineName", editTripAirline);
+            updateTripDetails.put("tripDetails", editTripDetails);
+
+            myDbRef.updateChildren(updateTripDetails);
+
+            //myDbRef.setValue(tripData);//update
             Toast.makeText(ctx, "Trip Updated", Toast.LENGTH_SHORT).show();
         }else{
-            myDbRef.push().setValue(tripData);
+            /* Add Case*/
+            long id = tripHelperDB.addData(editTripName, editTripStartDate, editTripEndDate, editTripName, editTripDetails);
+            if(id == -1){
+                System.out.println("Not Inserted");
+            }
+
+            TripData tripData = new TripData(id, editTripName, editTripStartDate, editTripEndDate, editTripAirline, editTripDetails );
+            myDbRef.push().setValue(tripData); //add
             Toast.makeText(ctx, "Trip Created", Toast.LENGTH_SHORT).show();
         }
 
@@ -142,8 +166,7 @@ public class AddTripActivity extends AppCompatActivity {
     }
 
     public void clearFormAndBack(){
-        Intent intent = new Intent(ctx, TripListActivity.class);
-        startActivity(intent);
+        finish();
     }
 
     ValueEventListener postListener = new ValueEventListener() {
@@ -157,9 +180,7 @@ public class AddTripActivity extends AppCompatActivity {
                 editTextTripAirline.setText(td.getTripAirlineName().toString());
                 editTextTripStartDate.setText(td.getTripStartDate().toString());
                 editTextTripEndDate.setText(td.getTripEndDate().toString());
-
             }
-            // ...
         }
 
         @Override
