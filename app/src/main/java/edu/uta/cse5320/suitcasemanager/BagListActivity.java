@@ -45,6 +45,7 @@ import java.util.Map;
 import edu.uta.cse5320.dao.BagAdapter;
 import edu.uta.cse5320.dao.BagData;
 import edu.uta.cse5320.dao.BagHelper;
+import edu.uta.cse5320.dao.TripData;
 
 public class BagListActivity extends AppCompatActivity {
 
@@ -101,14 +102,15 @@ public class BagListActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
                 System.out.println(TAG+ " onChildAdded");
                 BagData bagData = dataSnapshot.getValue(BagData.class);
-                //bagArray.add(bagData.getBagName());
+
                 //Key - Value : TripName - f_id
                 hmap.put(bagData.getBagName(), dataSnapshot.getKey());
 
                 /* Inserting data in DB*/
-                long id = bagHelperDB.addData(bagData.getBagName(), bagData.getItemQuantity(), bagData.getImageUrl1(),bagData.getImageUrl2(),bagData.getImageUrl3() );
-                if(id == -1){
-                    System.out.println("Not Inserted");
+                int count = bagHelperDB.getListContent(bagData.getId());
+                if(count <= 0){
+                    System.out.println("Not Inserted!! Inserting Now..");
+                    bagHelperDB.addDataCompleteSync(bagData.getId(), bagData.getBagName(), bagData.getItemQuantity(), bagData.getImageUrl1(),bagData.getImageUrl2(),bagData.getImageUrl3());
                 }
 
                 /* Adding in List */
@@ -124,8 +126,7 @@ public class BagListActivity extends AppCompatActivity {
 
                     /* Updating data in DB*/
                     boolean flag = bagHelperDB.updateDetails(bagData.getId(), bagData.getBagName(), bagData.getItemQuantity(), bagData.getImageUrl1(),bagData.getImageUrl2(),bagData.getImageUrl3());
-                    //lastTouchedImageView
-                    System.out.println(TAG + "flag ="+ flag );
+
                     /* updating in List */
                     if(flag){
                         Iterator<BagData> itr = bagDataList.iterator();
@@ -145,7 +146,25 @@ public class BagListActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                System.out.println(TAG + "onChildRemoved");
+                System.out.println(TAG + " onChildRemoved");
+                BagData bagData = dataSnapshot.getValue(BagData.class);
+
+                //Update Database and List Here
+                boolean flag = bagHelperDB.deleteContent(bagData.getId());
+
+                if(flag){
+                    hmap.remove(bagData.getBagName());
+                    Iterator<BagData> itr = bagDataList.iterator();
+                    while (itr.hasNext()) {
+                        BagData element = itr.next();
+                        if(element.getId() == bagData.getId()) {
+                            bagDataList.remove(element);
+                            break;
+                        }
+                    }
+                    updateListView();
+                    myAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override

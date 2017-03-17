@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">SuitcaseManager</string>
     <string name="title_activity_bag_list">BagListActivity</string>
+    <string name="menu_open">open</string>
+    <string name="menu_close">close</string>
+    <string name="logout">Logout</string>
 </resources>

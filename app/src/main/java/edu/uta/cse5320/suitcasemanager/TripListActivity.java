@@ -5,8 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -45,7 +49,7 @@ import edu.uta.cse5320.dao.TripHelper;
 public class TripListActivity extends AppCompatActivity {
 
 
-    private Button mLogoutBtn;
+    //private Button mLogoutBtn;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private GoogleApiClient mGoogleApiClient;
@@ -53,25 +57,47 @@ public class TripListActivity extends AppCompatActivity {
     private EditText editTextName, editTextPhone, editTextAge;
     private DatabaseReference myDbRef;
     private TextView mTextViewName, mTextViewAge;
-    //List<String> tripArray ;
-    HashMap<String, String> hmap = new HashMap<String, String>();
+    HashMap<String, String> hmap;
     FirebaseUser user;
     private ListView listViewTrip;
     String TAG = "Suitcase Manager::TripScreen";
     public static final String EXTRA_MESSAGE = "edu.uta.cse5320.MESSAGE";
-    ArrayAdapter<String> myAdapter;
     TripAdapter myTripAdapter;
     ArrayList<TripData> tripDataList;
     TripHelper tripHelperDB;
+
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mToggle;
+    private static final  String logout = "Logout";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_list);
-        //tripArray = new ArrayList<String>();
 
-        mLogoutBtn = (Button) findViewById(R.id.logoutBtn);
+        // Left Menu / Navigational Layout
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.activity_trip_list);
+        mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.menu_open, R.string.menu_close);
+        mDrawerLayout.addDrawerListener(mToggle);
+        mToggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        NavigationView nv = (NavigationView)findViewById(R.id.nv1);
 
+        nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                if(menuItem.getTitle().equals(logout)) {
+                    mAuth.signOut();
+                    Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                }else{
+                    System.out.println("--- Reache Here -- "+ menuItem.getItemId());
+                }
+                return true;
+            }
+        });
+
+
+        //mLogoutBtn = (Button) findViewById(R.id.logoutBtn);
         mAuth = FirebaseAuth.getInstance();
         ctx = getApplicationContext();
         user = mAuth.getCurrentUser();
@@ -81,34 +107,26 @@ public class TripListActivity extends AppCompatActivity {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         myDbRef = database.getReference("test").child(user.getUid()).child("Trips");
+        hmap = new HashMap<String, String>();
         //dbUpdates(myDbRef);
-        if(savedInstanceState == null){
-            // everything else that doesn't update UI
-            System.out.println("-------------- onCreate Test ----------");
-        }
-        System.out.println("-------------- onCreate ----------");
+
         myDbRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
                 System.out.println(TAG+ " onChildAdded");
                 TripData tripData = dataSnapshot.getValue(TripData.class);
-                //tripArray.add(tripData.getTripName());
                 //Key - Value : TripName - f_id
                 hmap.put(tripData.getTripName(), dataSnapshot.getKey());
 
                 /* Inserting data in DB only when not existed*/
-
                 int count = tripHelperDB.getListContent(tripData.getId());
                 if(count <= 0){
-                    System.out.println("Not Inserted!! Inserting Now");
+                    System.out.println("Not Inserted!! Inserting Now..");
                     tripHelperDB.addDataCompleteSync(tripData.getId(), tripData.getTripName(), tripData.getTripStartDate(), tripData.getTripEndDate(),tripData.getTripAirlineName(),tripData.getTripDetails());
                 }
-
                 /* Adding in List */
                 tripDataList.add(tripData);
-
                 updateListView();
-
             }
 
             @Override
@@ -116,26 +134,14 @@ public class TripListActivity extends AppCompatActivity {
                 System.out.println(TAG + "onChildChanged" + dataSnapshot.getKey() +" Value :"+ dataSnapshot.getValue().toString());
                 TripData tripData = dataSnapshot.getValue(TripData.class);
                 if(tripData != null){
-                    //String tripName = tripData.getTripName();
+
                     Object oldKey = getKeyFromValue(hmap, dataSnapshot.getKey());
                     //Key - Value : TripName - f_id
                     hmap.remove(oldKey);
                     hmap.put(tripData.getTripName(), dataSnapshot.getKey());
-//                    int idx=0;
-//                    while (idx < tripArray.size())  {
-//                        if(tripArray.get(idx).equalsIgnoreCase(tripName)) {
-//                            System.out.println(TAG+" Matched ");
-//                            tripArray.remove(idx);
-//                        } else
-//                            ++idx;
-//                    }
-//                    tripArray.add(tripName);
-
-                    // Refactor the above code
                     /* Updating data in DB*/
                     boolean flag = tripHelperDB.updateDetails(tripData.getId(), tripData.getTripName(), tripData.getTripStartDate(), tripData.getTripEndDate(),tripData.getTripAirlineName(),tripData.getTripDetails());
-                    //lastTouchedImageView
-                    System.out.println(TAG + "flag ="+ flag );
+
                     /* updating in List */
                     if(flag){
                         Iterator<TripData> itr = tripDataList.iterator();
@@ -163,7 +169,6 @@ public class TripListActivity extends AppCompatActivity {
 
                 if(flag){
                     hmap.remove(tripData.getTripName());
-                    System.out.println("Whats is flag : "+ flag);
                     Iterator<TripData> itr = tripDataList.iterator();
                     while (itr.hasNext()) {
                         TripData element = itr.next();
@@ -172,17 +177,9 @@ public class TripListActivity extends AppCompatActivity {
                             break;
                         }
                     }
-
                     updateListView();
                     myTripAdapter.notifyDataSetChanged();
                 }
-//                int idx=0;
-//                while (idx < tripArray.size())  {
-//                    if(tripArray.get(idx).equalsIgnoreCase(tripName))
-//                        tripArray.remove(idx);
-//                    else
-//                        ++idx;
-//                }
             }
 
             @Override
@@ -225,21 +222,14 @@ public class TripListActivity extends AppCompatActivity {
             }
         };
         // Logout Listener
-        mLogoutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAuth.signOut();
-                Auth.GoogleSignInApi.signOut(mGoogleApiClient);
-            }
-        });
-
-        //Save on Cloud
-//        mSaveButton.setOnClickListener(new View.OnClickListener() {
+//        mLogoutBtn.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
-//                saveUserInformation();
+//                mAuth.signOut();
+//                Auth.GoogleSignInApi.signOut(mGoogleApiClient);
 //            }
 //        });
+
         /* Floating Button for moving to Add Trip */
         FloatingActionButton myFab = (FloatingActionButton) findViewById(R.id.floatingButtonAddTrip);
         myFab.setOnClickListener(new View.OnClickListener() {
@@ -275,7 +265,6 @@ public class TripListActivity extends AppCompatActivity {
                         if(!key.isEmpty()){
                             myDbRef.child(key).setValue(null);
                         }
-
                     }
                 });
                 imageViewEdit.setOnClickListener(new View.OnClickListener() {
@@ -300,6 +289,17 @@ public class TripListActivity extends AppCompatActivity {
         mAuth.addAuthStateListener(mAuthListener);
     }
 
+    //Left Menu
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+
+        if(mToggle.onOptionsItemSelected(item)){
+            return true;
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void updateListView(){
         myTripAdapter.notifyDataSetChanged();
         listViewTrip.invalidate();
@@ -313,42 +313,4 @@ public class TripListActivity extends AppCompatActivity {
         }
         return null;
     }
-/*
-    public void saveUserInformation(){
-        String name = editTextName.getText().toString();
-        String age =  editTextAge.getText().toString();
-        String phone =  editTextPhone.getText().toString();
-
-        UserData userData = new UserData(name, age, phone, null); //email set to null in begining
-
-        FirebaseUser user = mAuth.getCurrentUser();
-        myDbRef.child(user.getUid()).setValue(userData);
-
-        Toast.makeText(ctx, "Data Saved..", Toast.LENGTH_SHORT).show();
-        dbUpdates(myDbRef);
-    }
-
-    public void dbUpdates(DatabaseReference myDbRef){
-        myDbRef.addChildEventListener(new ChildEventListener(){
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
-                UserData ud= dataSnapshot.getValue(UserData.class);
-//                mTextViewName.setText(ud.getFullName());
-//                mTextViewAge.setText(ud.getAge());
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {}
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {}
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String prevChildKey) {}
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
-
-        });
-    }*/
 }

@@ -52,14 +52,22 @@ public class BagHelper extends SQLiteOpenHelper {
         contentValues.put(COL6, imageUrl3);
 
         long result = db.insert(TABLE_NAME, null, contentValues);
-
-        //if date as inserted incorrectly it will return -1
-        //if (result == -1) {
         return result;
-        //} else {
-        //    return result;
-        //}
     }
+
+    public void addDataCompleteSync(long id, String bagName, int itemQuantity, String imageUrl1, String imageUrl2, String imageUrl3){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL1, id);
+        contentValues.put(COL2, bagName);
+        contentValues.put(COL3, itemQuantity);
+        contentValues.put(COL4, imageUrl1);
+        contentValues.put(COL5, imageUrl2);
+        contentValues.put(COL6, imageUrl3);
+
+        db.insert(TABLE_NAME, null, contentValues);
+    }
+
 
     public boolean updateDetails(long rowId, String bagName, int itemQuantity, String imageUrl1, String imageUrl2, String imageUrl3)
     {
@@ -79,6 +87,21 @@ public class BagHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor data = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
         return data;
+    }
+
+    public int getListContent(long rowId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor data = db.rawQuery("SELECT * FROM " + TABLE_NAME+ " WHERE "+COL1+" =" + rowId, null);
+        return data.getCount();
+    }
+
+    public boolean deleteContent(long rowId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int row_affected = db.delete(TABLE_NAME, COL1 + " ="+ rowId, null);
+        if(row_affected>0){
+            return true;
+        }
+        return false;
     }
 
 }

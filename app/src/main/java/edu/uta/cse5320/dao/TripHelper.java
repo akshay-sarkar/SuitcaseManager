@@ -52,9 +52,7 @@ public class TripHelper extends SQLiteOpenHelper {
         contentValues.put(COL6, tripDetails);
 
         long result = db.insert(TABLE_NAME, null, contentValues);
-
         return result;
-
     }
 
     public void addDataCompleteSync(long id, String tripName, String tripStartDate, String tripEndDate, String tripAirlineName, String tripDetails){
@@ -96,7 +94,6 @@ public class TripHelper extends SQLiteOpenHelper {
         return data.getCount();
     }
 
-    // Deleting single contact
     public boolean deleteContent(long rowId) {
         SQLiteDatabase db = this.getWritableDatabase();
         int row_affected = db.delete(TABLE_NAME, COL1 + " ="+ rowId, null);
