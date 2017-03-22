@@ -23,22 +23,31 @@
             fabSize="normal"
             android:id="@+id/floatingButtonAddTrip"/>
 
+        <TextView
+            android:id="@+id/textViewTripHeading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Trip Details"
+            android:textAlignment="viewStart"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
         <ListView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/listTrips"
-            android:layout_below="@+id/logoutBtn"
+            android:layout_below="@+id/textViewTripHeading"
             android:layout_alignParentStart="true"
-            android:layout_marginTop="11dp" />
+            android:layout_marginTop="15dp"/>
 
     </RelativeLayout>
 
     <android.support.design.widget.NavigationView
+        android:id="@+id/nv1"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        app:menu="@menu/navigation_menu"
         android:layout_gravity="start"
-        android:id="@+id/nv1">
-
+        app:itemTextAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:menu="@menu/navigation_menu">
     </android.support.design.widget.NavigationView>
 </android.support.v4.widget.DrawerLayout>
