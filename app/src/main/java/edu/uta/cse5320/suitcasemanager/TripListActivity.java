@@ -62,7 +62,8 @@ public class TripListActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ProgressDialog progressDialog;
     private ActionBarDrawerToggle mToggle;
-    private static final  String logout = "Logout";
+    private static final String logout = "Logout";
+    private static final String Airline_Information = "Airline Information";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +83,11 @@ public class TripListActivity extends AppCompatActivity {
                 if(menuItem.getTitle().equals(logout)) {
                     mAuth.signOut();
                     Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                }else if(menuItem.getTitle().equals(Airline_Information)) {
+                    Intent intent = new Intent(ctx, AirlineActivity.class);
+                    startActivity(intent);
                 }else{
-                    System.out.println("--- Reache Here -- "+ menuItem.getItemId());
+                    System.out.println("--- Reache Here -- "+ menuItem.getTitle()); //Airline Information
                 }
                 return true;
             }
@@ -124,7 +128,7 @@ public class TripListActivity extends AppCompatActivity {
                 /* Adding in List */
                 tripDataList.add(tripData);
                 updateListView();
-                
+
                 // Dimiss the dialog box
                 progressDialog.dismiss();
             }

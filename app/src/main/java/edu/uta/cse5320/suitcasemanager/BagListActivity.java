@@ -80,7 +80,8 @@ public class BagListActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
-    private static final  String logout = "Logout";
+    private static final String logout = "Logout";
+    private static final String Home = "Home";
     private GoogleApiClient mGoogleApiClient;
 
     @Override
@@ -102,6 +103,8 @@ public class BagListActivity extends AppCompatActivity {
                 if(menuItem.getTitle().equals(logout)) {
                     mAuth.signOut();
                     Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                }else if(menuItem.getTitle().equals(Home)) {
+                    finish();
                 }else{
                     System.out.println("--- Reache Here -- "+ menuItem.getItemId());
                 }
@@ -111,6 +114,8 @@ public class BagListActivity extends AppCompatActivity {
 
         //Progress for operations
         progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Retrieving Your Data..");
+        progressDialog.show();
 
         /* Getting Data from the data */
         Intent intent = getIntent();
@@ -136,6 +141,7 @@ public class BagListActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
                 System.out.println(TAG+ " onChildAdded");
+                progressDialog.dismiss();
                 BagData bagData = dataSnapshot.getValue(BagData.class);
 
                 //Key - Value : TripName - f_id

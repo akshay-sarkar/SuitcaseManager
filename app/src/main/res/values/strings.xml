@@ -5,4 +5,6 @@
     <string name="menu_close">close</string>
     <string name="logout">Logout</string>
     <string name="trip_details">Trip Details</string>
+    <string name="bag_details">Bag Details</string>
+    <string name="title_activity_airline">AirlineActivity</string>
 </resources>

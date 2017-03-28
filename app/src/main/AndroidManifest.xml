@@ -3,8 +3,9 @@
     package="edu.uta.cse5320.suitcasemanager">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <uses-feature android:name="android.hardware.camera" />
 
     <application
@@ -16,14 +17,14 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".TripListActivity" />
         <activity android:name=".AddTripActivity" />
-        <activity
-            android:name=".BagListActivity"
-            android:label="@string/title_activity_bag_list" />
+        <activity android:name=".BagListActivity"/>
+        <activity android:name=".AirlineActivity" />
         <!-- https://developer.android.com/reference/android/support/v4/content/FileProvider.html -->
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -32,8 +33,10 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
+
+
     </application>
 
 </manifest>

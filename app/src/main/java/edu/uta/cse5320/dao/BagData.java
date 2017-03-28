@@ -80,25 +80,4 @@ public class BagData {
     public void setImageUrl3(String imageUrl3) {
         this.imageUrl3 = imageUrl3;
     }
-/*
-    @Override
-    public boolean equals(Object obj) {
-
-        final BagData other = (BagData) obj;
-        if (obj == null) {
-            return false;
-        }
-        if (this.id == other.getId()) {
-            return true;
-        }
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 53 * hash + (this.getImageUrl1() != null ? this.name.hashCode() : 0);
-        return hash;
-    }
-*/
 }
