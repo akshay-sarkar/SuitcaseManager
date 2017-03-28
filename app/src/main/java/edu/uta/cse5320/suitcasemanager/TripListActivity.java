@@ -1,5 +1,6 @@
 package edu.uta.cse5320.suitcasemanager;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,13 +10,10 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -37,18 +35,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-
-import edu.uta.cse5320.dao.BagAdapter;
-import edu.uta.cse5320.dao.BagData;
 import edu.uta.cse5320.dao.TripAdapter;
 import edu.uta.cse5320.dao.TripData;
 import edu.uta.cse5320.dao.TripHelper;
+import edu.uta.cse5320.util.ApplicationConstant;
 
 public class TripListActivity extends AppCompatActivity {
-
-
     //private Button mLogoutBtn;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -67,6 +60,7 @@ public class TripListActivity extends AppCompatActivity {
     TripHelper tripHelperDB;
 
     private DrawerLayout mDrawerLayout;
+    private ProgressDialog progressDialog;
     private ActionBarDrawerToggle mToggle;
     private static final  String logout = "Logout";
 
@@ -82,7 +76,6 @@ public class TripListActivity extends AppCompatActivity {
         mToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         NavigationView nv = (NavigationView)findViewById(R.id.nv1);
-
         nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
@@ -96,6 +89,10 @@ public class TripListActivity extends AppCompatActivity {
             }
         });
 
+        //Progress for operations
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Retrieving Your Data..");
+        progressDialog.show();
 
         //mLogoutBtn = (Button) findViewById(R.id.logoutBtn);
         mAuth = FirebaseAuth.getInstance();
@@ -106,7 +103,7 @@ public class TripListActivity extends AppCompatActivity {
         tripHelperDB = new TripHelper(this);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        myDbRef = database.getReference("test").child(user.getUid()).child("Trips");
+        myDbRef = database.getReference(ApplicationConstant.root_prop).child(user.getUid()).child(ApplicationConstant.root_trip_prop);
         hmap = new HashMap<String, String>();
         //dbUpdates(myDbRef);
 
@@ -127,6 +124,9 @@ public class TripListActivity extends AppCompatActivity {
                 /* Adding in List */
                 tripDataList.add(tripData);
                 updateListView();
+                
+                // Dimiss the dialog box
+                progressDialog.dismiss();
             }
 
             @Override
@@ -217,18 +217,12 @@ public class TripListActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth){
                 if( firebaseAuth.getCurrentUser() == null){
-                    startActivity(new Intent(TripListActivity.this, MainActivity.class));
+                    Intent loginScreenIntent = new Intent(TripListActivity.this, MainActivity.class);
+                    loginScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(loginScreenIntent);
                 }
             }
         };
-        // Logout Listener
-//        mLogoutBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mAuth.signOut();
-//                Auth.GoogleSignInApi.signOut(mGoogleApiClient);
-//            }
-//        });
 
         /* Floating Button for moving to Add Trip */
         FloatingActionButton myFab = (FloatingActionButton) findViewById(R.id.floatingButtonAddTrip);
@@ -295,7 +289,6 @@ public class TripListActivity extends AppCompatActivity {
 
         if(mToggle.onOptionsItemSelected(item)){
             return true;
-
         }
         return super.onOptionsItemSelected(item);
     }

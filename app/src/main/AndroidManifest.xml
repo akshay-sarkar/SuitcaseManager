@@ -23,8 +23,7 @@
         <activity android:name=".AddTripActivity" />
         <activity
             android:name=".BagListActivity"
-            android:label="@string/title_activity_bag_list"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:label="@string/title_activity_bag_list" />
         <!-- https://developer.android.com/reference/android/support/v4/content/FileProvider.html -->
         <provider
             android:name="android.support.v4.content.FileProvider"

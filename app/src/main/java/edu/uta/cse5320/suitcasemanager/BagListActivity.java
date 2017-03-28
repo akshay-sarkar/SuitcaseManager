@@ -10,8 +10,12 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.content.FileProvider;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -20,6 +24,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,6 +58,7 @@ public class BagListActivity extends AppCompatActivity {
 
     FirebaseUser user;
     private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
     private Context ctx;
     private DatabaseReference myDbRef, imageURLRef;
     private StorageReference mStorageRef;
@@ -70,10 +78,36 @@ public class BagListActivity extends AppCompatActivity {
     private BagHelper bagHelperDB;
     ArrayList<BagData> bagDataList;
 
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mToggle;
+    private static final  String logout = "Logout";
+    private GoogleApiClient mGoogleApiClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bag_list);
+
+        // Left Menu / Navigational Layout
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.activity_bag_list);
+        mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.menu_open, R.string.menu_close);
+        mDrawerLayout.addDrawerListener(mToggle);
+        mToggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        NavigationView nv = (NavigationView)findViewById(R.id.nv2);
+
+        nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                if(menuItem.getTitle().equals(logout)) {
+                    mAuth.signOut();
+                    Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                }else{
+                    System.out.println("--- Reache Here -- "+ menuItem.getItemId());
+                }
+                return true;
+            }
+        });
 
         //Progress for operations
         progressDialog = new ProgressDialog(this);
@@ -93,6 +127,7 @@ public class BagListActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         ctx = getApplicationContext();
         user = mAuth.getCurrentUser();
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         myDbRef = database.getReference("test").child(user.getUid()).child("Trips").child(tripID).child("Bags");
         mStorageRef = FirebaseStorage.getInstance().getReference();
@@ -353,5 +388,40 @@ public class BagListActivity extends AppCompatActivity {
     private void updateListView(){
         myAdapter.notifyDataSetChanged();
         listBagTrip.invalidate();
+    }
+
+    @Override
+    protected void onStart() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+        mGoogleApiClient.connect();
+        mAuthListener = new FirebaseAuth.AuthStateListener(){
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth){
+                if( firebaseAuth.getCurrentUser() == null){
+                    Intent loginScreenIntent = new Intent(BagListActivity.this, MainActivity.class);
+                    loginScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(loginScreenIntent);
+                }
+            }
+        };
+
+        mAuth.addAuthStateListener(mAuthListener);
+
+        super.onStart();
+    }
+
+    //Left Menu
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+
+        if(mToggle.onOptionsItemSelected(item)){
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
