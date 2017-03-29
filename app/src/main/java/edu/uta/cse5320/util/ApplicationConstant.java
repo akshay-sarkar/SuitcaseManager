@@ -7,4 +7,5 @@ package edu.uta.cse5320.util;
 public class ApplicationConstant {
     public static String root_prop = "test";
     public static String root_trip_prop = "Trips";
+    public static String airline_prop = "Airlines";
 }

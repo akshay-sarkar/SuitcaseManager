@@ -25,7 +25,8 @@ public class TripAdapter extends ArrayAdapter<TripData> {
     private int mViewResourceId;
     private Context context;
 
-    public TripAdapter(Context context, int textViewResourceId, ArrayList<TripData> tripData) {
+    public TripAdapter(Context context, int textViewResourceId,
+                       ArrayList<TripData> tripData) {
         super(context, textViewResourceId, tripData);
         this.context = context;
         this.tripDatas = tripData;

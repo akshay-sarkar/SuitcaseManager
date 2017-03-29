@@ -4,49 +4,76 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/countrylabel"
+        android:id="@+id/airlineNameLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Airline Name : "
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_alignBaseline="@+id/airlineName"
+        android:layout_alignBottom="@+id/airlineName"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginStart="12dp" />
 
     <TextView
-        android:id="@+id/country"
+        android:id="@+id/airlineName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/countrylabel"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@+id/airlineNameLabel"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/populationlabel"
+        android:id="@+id/airlineEmailLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Airline Email : "
-        android:layout_below="@+id/countrylabel"
-        android:layout_marginTop="10dp" />
+        android:layout_alignBaseline="@+id/airlineEmail"
+        android:layout_alignBottom="@+id/airlineEmail"
+        android:layout_alignStart="@+id/airlineNameLabel" />
 
 
     <TextView
-        android:id="@+id/population"
+        android:id="@+id/airlineEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/country"
-        android:layout_toRightOf="@+id/populationlabel" />
+        android:layout_below="@+id/airlineName"
+        android:layout_toRightOf="@+id/airlineEmailLabel"
+        android:layout_marginTop="10dp"/>
 
     <TextView
-        android:id="@+id/ranklabel"
+    android:id="@+id/airlineURLLabel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Airline URL : "
+        android:layout_alignBaseline="@+id/airlineURL"
+        android:layout_alignBottom="@+id/airlineURL"
+        android:layout_alignStart="@+id/airlineEmailLabel" />
+
+    <TextView
+        android:id="@+id/airlineURL"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/airlineURLLabel"
+        android:layout_below="@+id/airlineEmail"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:id="@+id/airlinePhoneLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Airline Phone number : "
-        android:layout_below="@+id/populationlabel"
-        android:layout_marginTop="10dp" />
+        android:layout_alignBaseline="@+id/airlinePhone"
+        android:layout_alignBottom="@+id/airlinePhone"
+        android:layout_alignStart="@+id/airlineURLLabel" />
 
     <TextView
-        android:id="@+id/rank"
+        android:id="@+id/airlinePhone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/ranklabel"
-        android:layout_below="@+id/population"/>
+        android:layout_toRightOf="@+id/airlinePhoneLabel"
+        android:layout_below="@+id/airlineURLLabel"
+        android:layout_marginTop="10dp"/>
 
 </RelativeLayout>

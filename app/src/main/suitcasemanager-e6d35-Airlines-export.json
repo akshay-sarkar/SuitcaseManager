@@ -1,0 +1,32 @@
+{
+  "Airline1" : {
+    "airlineEmail" : "air_india@airindia.com",
+    "airlineName" : "Air India",
+    "airlineCustomerCare" : 18008901231,
+    "airlineUrl" : "http://www.google.com"
+  },
+  "Airline2" : {
+    "airlineEmail" : "air_france@air_france.com",
+    "airlineName" : "Air France",
+    "airlineCustomerCare" : 18008901231,
+    "airlineUrl" : "http://www.google.com"
+  },
+  "Airline3" : {
+    "airlineEmail" : "british_airways@britishairways.com",
+    "airlineName" : "British Airways",
+    "airlineCustomerCare" : 18008901231,
+    "airlineUrl" : "http://www.google.com"
+  },
+  "Airline4" : {
+    "airlineEmail" : "american_airlines@Americanairline.com",
+    "airlineName" : "American Airline",
+    "airlineCustomerCare" : 18008901231,
+    "airlineUrl" : "http://www.google.com"
+  },
+  "Airline5" : {
+    "airlineEmail" : "tigerairways@tigerairways.com",
+    "airlineName" : "Tiger Airline",
+    "airlineCustomerCare" : 18008901231,
+    "airlineUrl" : "http://www.google.com"
+  }
+}
