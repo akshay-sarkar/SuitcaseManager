@@ -153,11 +153,12 @@ public class BagListActivity extends AppCompatActivity {
             }
         });
 
-        myDbRef.addChildEventListener(new ChildEventListener() {
+        myDbRef.orderByKey().addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
                 System.out.println(TAG+ " onChildAdded" + dataSnapshot);
                 progressDialog.dismiss();
+                ++index;
                 BagData bagData = dataSnapshot.getValue(BagData.class);
 
                 //Key - Value : TripName - f_id
@@ -236,7 +237,7 @@ public class BagListActivity extends AppCompatActivity {
         /* List Trip Data */
         listBagTrip = (ListView) findViewById(R.id.listBags);
         // initiate the listadapter
-        myAdapter = new BagAdapter(this, R.layout.bag_list_layout, bagDataList);
+        myAdapter = new BagAdapter(this, R.layout.bag_list_layout, bagDataList, myDbRef , mStorageRef);
         myAdapter.setNotifyOnChange(true);
         listBagTrip.setAdapter(myAdapter);
 
@@ -250,6 +251,8 @@ public class BagListActivity extends AppCompatActivity {
 
         /* List Listner */
         listBagTrip.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final ImageView imageViewBagPicture1 = (ImageView) view.findViewById(R.id.imageViewBagPicture1);
@@ -377,7 +380,6 @@ public class BagListActivity extends AppCompatActivity {
     public void createBags(){
 
         String editBagName = "Bag Item-"+index;
-        ++index;
         int editBagItems = 12;//editTextTripStartDate.getText().toString();
 
         long id = bagHelperDB.addData(editBagName, editBagItems, "", "", "");

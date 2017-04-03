@@ -130,7 +130,7 @@ public class TripListActivity extends AppCompatActivity {
             }
         });
 
-        myDbRef.addChildEventListener(new ChildEventListener() {
+        myDbRef.orderByKey().addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
                 System.out.println(TAG+ " onChildAdded");
