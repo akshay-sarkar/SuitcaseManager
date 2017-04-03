@@ -36,6 +36,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -73,7 +74,7 @@ public class BagListActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     String mCurrentPhotoPath;
     Uri photoURI;
-    ImageView lastTouchedImageView;
+    String lastTouchedImageView;
     private String tripID ,bagID;
     private BagHelper bagHelperDB;
     ArrayList<BagData> bagDataList;
@@ -137,10 +138,25 @@ public class BagListActivity extends AppCompatActivity {
         myDbRef = database.getReference("test").child(user.getUid()).child("Trips").child(tripID).child("Bags");
         mStorageRef = FirebaseStorage.getInstance().getReference();
 
+        //to check if its bag details are empty and removing the progress dialog
+        myDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    System.out.println(TAG+ " onDataChange -> Empty" );
+                    progressDialog.dismiss();
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         myDbRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
-                System.out.println(TAG+ " onChildAdded");
+                System.out.println(TAG+ " onChildAdded" + dataSnapshot);
                 progressDialog.dismiss();
                 BagData bagData = dataSnapshot.getValue(BagData.class);
 
@@ -281,8 +297,9 @@ public class BagListActivity extends AppCompatActivity {
         });
     }
 
-    private void dispatchTakePictureIntent(ImageView imageViewBagPicture1) {
-        lastTouchedImageView = imageViewBagPicture1;
+    private void dispatchTakePictureIntent(ImageView imageViewBagPicture) {
+        lastTouchedImageView =  getResources().getResourceEntryName(imageViewBagPicture.getId());
+        lastTouchedImageView = "imageUrl" + lastTouchedImageView.charAt(lastTouchedImageView.length()-1);
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         //startActivityForResult(intent1, CAMERA_REQUEST_CODE);
         // Ensure that there's a camera activity to handle the intent
@@ -293,7 +310,6 @@ public class BagListActivity extends AppCompatActivity {
                 photoFile = createImageFile();
             } catch (IOException ex) {
                 // Error occurred while creating the File
-
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
@@ -340,30 +356,12 @@ public class BagListActivity extends AppCompatActivity {
 
                         //Updating the URL in Database
                         Map<String, Object> hopperUpdates = new HashMap<String, Object>();
-                        hopperUpdates.put("imageUrl1", downloadUrl.toString());
+                        hopperUpdates.put(lastTouchedImageView, downloadUrl.toString());
 
                         imageURLRef.updateChildren(hopperUpdates);
 
                         progressDialog.dismiss();
                         Toast.makeText(ctx, "Image Uploade Finished...", Toast.LENGTH_SHORT).show();
-
-                        /* Unable to access the file from the File System */
-                        /* At this point of time, i have variable photoURI, i used for uploading the image on firebase. */
-                    /*
-                        // Trial-1
-                        File imgFile = new  File("file://edu.uta.cse5320.suitcasemanager/files/Pictures/JPEG_20170315_190100_156454929.jpg");
-
-                        //Trial-2
-                        File imagePath = new File(ctx.getFilesDir(), "images");
-                        File newFile = new File(imagePath, "JPEG_20170315_190100_156454929.jpg");
-                        //newFile has Path - /data/user/0/edu.uta.cse5320.suitcasemanager/files/Picture/JPEG_20170315_190100_156454929.jpg
-
-                        // I need to create a Bitmap Image later on ..
-                        if(imgFile.exists()) {
-                            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                            lastTouchedImageView.setImageBitmap(myBitmap);
-                        }
-                    */
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

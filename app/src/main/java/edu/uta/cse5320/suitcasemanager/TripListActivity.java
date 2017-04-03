@@ -32,6 +32,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -113,6 +114,21 @@ public class TripListActivity extends AppCompatActivity {
         myDbRef = database.getReference(ApplicationConstant.root_prop).child(user.getUid()).child(ApplicationConstant.root_trip_prop);
         hmap = new HashMap<String, String>();
         //dbUpdates(myDbRef);
+
+        //to check if its trip details are empty and removing the progress dialog - only called once
+        myDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    System.out.println(TAG+ " onDataChange -> Empty" );
+                    progressDialog.dismiss();
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         myDbRef.addChildEventListener(new ChildEventListener() {
             @Override
