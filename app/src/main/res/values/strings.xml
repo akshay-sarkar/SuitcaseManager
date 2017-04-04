@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SuitcaseManager</string>
+    <string name="app_name">Suitcase Manager</string>
     <string name="title_activity_bag_list">BagListActivity</string>
     <string name="menu_open">open</string>
     <string name="menu_close">close</string>
@@ -7,4 +7,5 @@
     <string name="trip_details">Trip Details</string>
     <string name="bag_details">Bag Details</string>
     <string name="title_activity_airline">AirlineActivity</string>
+    <string name="app_heading">Suitcase Manager</string>
 </resources>

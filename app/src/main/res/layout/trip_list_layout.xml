@@ -10,9 +10,9 @@
         android:text="Trip Name"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_alignBottom="@+id/imageViewPublish"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="13dp" />
+        android:layout_marginStart="13dp"
+        android:layout_marginTop="10dp"/>
 
     <ImageView
         android:id="@+id/imageViewEdit"
@@ -22,7 +22,8 @@
         android:layout_marginStart="15dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:contentDescription="Edit Trip" />
+        android:contentDescription="Edit Trip"
+        android:layout_marginTop="5dp"/>
 
     <ImageView
         android:id="@+id/imageViewDelete"
@@ -32,17 +33,19 @@
         android:layout_alignParentTop="true"
         android:layout_toStartOf="@+id/imageViewEdit"
         android:layout_marginStart="15dp"
-        android:contentDescription="Delete Trip" />
+        android:contentDescription="Delete Trip"
+        android:layout_alignBottom="@+id/imageViewEdit"/>
 
     <ImageView
         android:id="@+id/imageViewPublish"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_public_black_48dp"
+        android:src="@drawable/ic_info_black_48dp"
         android:layout_alignParentTop="true"
         android:layout_toStartOf="@+id/imageViewDelete"
         android:layout_marginStart="15dp"
-        android:contentDescription="Info Trip"/>
+        android:contentDescription="Info Trip"
+        android:layout_alignBottom="@+id/imageViewEdit" />
 
     <TextView
         android:id="@+id/textViewAirline"
@@ -53,6 +56,7 @@
         android:layout_marginTop="25dp"
         android:text="Airline Name"
         android:textSize="18sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        />
 
 </RelativeLayout>
