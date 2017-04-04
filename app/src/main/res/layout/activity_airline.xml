@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="edu.uta.cse5320.suitcasemanager.AirlineActivity">
+    tools:context="edu.uta.cse5320.suitcasemanager.AirlineActivity"
+    android:background="@color/colorGrey">
 
     <EditText
         android:id="@+id/editTextTripAirlineSearch"

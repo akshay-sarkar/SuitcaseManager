@@ -27,6 +27,7 @@ import java.util.Map;
 
 import edu.uta.cse5320.dao.TripData;
 import edu.uta.cse5320.dao.TripHelper;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class AddTripActivity extends AppCompatActivity {
 
@@ -40,6 +41,12 @@ public class AddTripActivity extends AppCompatActivity {
     private boolean isEditMode = false;
     private TripHelper tripHelperDB;
     private String message;
+
+    // for font
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

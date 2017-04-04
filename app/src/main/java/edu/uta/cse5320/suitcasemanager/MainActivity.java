@@ -24,6 +24,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
@@ -37,6 +39,11 @@ public class MainActivity extends AppCompatActivity {
     //private TextView mStatusTextView;
 
     private SignInButton mGoogleSignInButton;
+    // for custom font
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

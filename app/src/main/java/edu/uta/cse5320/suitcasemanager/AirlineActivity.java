@@ -1,6 +1,7 @@
 package edu.uta.cse5320.suitcasemanager;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -21,6 +22,7 @@ import java.util.Locale;
 import edu.uta.cse5320.dao.AirlineAdapter;
 import edu.uta.cse5320.dao.AirlineData;
 import edu.uta.cse5320.util.ApplicationConstant;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class AirlineActivity extends AppCompatActivity {
 
@@ -32,6 +34,12 @@ public class AirlineActivity extends AppCompatActivity {
     private DatabaseReference myDbRef;
 
     private ProgressDialog progressDialog;
+
+    // for font
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

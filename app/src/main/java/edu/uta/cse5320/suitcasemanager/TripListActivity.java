@@ -42,6 +42,7 @@ import edu.uta.cse5320.dao.TripAdapter;
 import edu.uta.cse5320.dao.TripData;
 import edu.uta.cse5320.dao.TripHelper;
 import edu.uta.cse5320.util.ApplicationConstant;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class TripListActivity extends AppCompatActivity {
     //private Button mLogoutBtn;
@@ -60,12 +61,15 @@ public class TripListActivity extends AppCompatActivity {
     TripAdapter myTripAdapter;
     ArrayList<TripData> tripDataList;
     TripHelper tripHelperDB;
-
     private DrawerLayout mDrawerLayout;
     private ProgressDialog progressDialog;
     private ActionBarDrawerToggle mToggle;
-    private static final String logout = "Logout";
-    private static final String Airline_Information = "Airline Information";
+
+    // for custom font
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,10 +86,10 @@ public class TripListActivity extends AppCompatActivity {
         nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
-                if(menuItem.getTitle().equals(logout)) {
+                if(menuItem.getTitle().equals(ApplicationConstant.logout)) {
                     mAuth.signOut();
                     Auth.GoogleSignInApi.signOut(mGoogleApiClient);
-                }else if(menuItem.getTitle().equals(Airline_Information)) {
+                }else if(menuItem.getTitle().equals(ApplicationConstant.Airline_Information)) {
                     Intent intent = new Intent(ctx, AirlineActivity.class);
                     startActivity(intent);
                 }else{

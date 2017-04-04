@@ -54,6 +54,8 @@ import edu.uta.cse5320.dao.BagAdapter;
 import edu.uta.cse5320.dao.BagData;
 import edu.uta.cse5320.dao.BagHelper;
 import edu.uta.cse5320.dao.TripData;
+import edu.uta.cse5320.util.ApplicationConstant;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class BagListActivity extends AppCompatActivity {
 
@@ -81,9 +83,13 @@ public class BagListActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
-    private static final String logout = "Logout";
-    private static final String Home = "Home";
     private GoogleApiClient mGoogleApiClient;
+
+    // for font
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,10 +107,13 @@ public class BagListActivity extends AppCompatActivity {
         nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
-                if(menuItem.getTitle().equals(logout)) {
+                if(menuItem.getTitle().equals(ApplicationConstant.logout)) {
                     mAuth.signOut();
                     Auth.GoogleSignInApi.signOut(mGoogleApiClient);
-                }else if(menuItem.getTitle().equals(Home)) {
+                }else if(menuItem.getTitle().equals(ApplicationConstant.Airline_Information)) {
+                    Intent intent = new Intent(ctx, AirlineActivity.class);
+                    startActivity(intent);
+                }else if(menuItem.getTitle().equals(ApplicationConstant.Home)) {
                     finish();
                 }else{
                     System.out.println("--- Reache Here -- "+ menuItem.getItemId());
