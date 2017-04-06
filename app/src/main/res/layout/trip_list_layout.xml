@@ -12,9 +12,14 @@
         android:textStyle="bold"
         android:layout_alignParentStart="true"
         android:layout_marginStart="13dp"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        />
 
     <ImageView
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         android:id="@+id/imageViewEdit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -58,5 +63,49 @@
         android:textSize="18sp"
         android:textStyle="bold"
         />
+
+    <TextView
+        android:id="@+id/textViewStartDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/tripListLabelName"
+        android:layout_below="@+id/textViewAirline"
+        android:layout_marginTop="25dp"
+        android:text="Start Date"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/textViewStartDateVal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/textViewStartDate"
+        android:layout_alignBaseline="@+id/textViewStartDate"
+        android:text="01/01/1990"
+        android:layout_marginLeft="20dp"
+        />
+
+    <TextView
+        android:id="@+id/textViewEndDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/tripListLabelName"
+        android:layout_below="@+id/textViewStartDate"
+        android:layout_marginTop="25dp"
+        android:text="End Date"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/textViewEndDate"
+        android:layout_alignBaseline="@+id/textViewEndDate"
+        android:text="01/01/1990"
+        android:layout_alignStart="@+id/textViewStartDateVal"
+        />
+
 
 </RelativeLayout>

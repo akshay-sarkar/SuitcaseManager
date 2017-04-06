@@ -23,7 +23,7 @@
             android:clickable="true"
             android:src="@drawable/ic_add_black_48dp"
             fabSize="normal"
-            android:id="@+id/floatingButtonAddBag"/>
+            android:id="@+id/floatingButtonAddBag" />
 
         <TextView
             android:id="@+id/textViewBagHeading"

@@ -51,9 +51,9 @@ public class TripListActivity extends AppCompatActivity {
     private GoogleApiClient mGoogleApiClient;
     private Context ctx;
     private EditText editTextName, editTextPhone, editTextAge;
-    private DatabaseReference myDbRef;
+    public static DatabaseReference myDbRef;
     private TextView mTextViewName, mTextViewAge;
-    HashMap<String, String> hmap;
+    public static HashMap<String, String> hmap;
     FirebaseUser user;
     private ListView listViewTrip;
     String TAG = "Suitcase Manager::TripScreen";
@@ -259,49 +259,6 @@ public class TripListActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        listViewTrip.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final TextView tv = (TextView) view.findViewById(R.id.tripListLabelName);
-                final ImageView imageViewDelete = (ImageView) view.findViewById(R.id.imageViewDelete);
-                final ImageView imageViewEdit = (ImageView) view.findViewById(R.id.imageViewEdit);
-                tv.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //int position = listViewTrip.getPositionForView((View) v.getParent());
-                        Toast.makeText(ctx, "Clicked on  - "+ tv.getText().toString(), Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(ctx, BagListActivity.class);
-                        intent.putExtra(EXTRA_MESSAGE, hmap.get(tv.getText().toString()));
-                        startActivity(intent);
-                    }
-                });
-                imageViewDelete.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ViewGroup row = (ViewGroup) v.getParent();
-                        TextView textView = (TextView) row.findViewById(R.id.tripListLabelName);
-                        String key = hmap.get(tv.getText().toString());
-                        System.out.println(TAG+" Icon of  - "+ tv.getText().toString() +" Delete :"+key);
-                        if(!key.isEmpty()){
-                            myDbRef.child(key).setValue(null);
-                        }
-                    }
-                });
-                imageViewEdit.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //int position = listViewTrip.getPositionForView((View) v.getParent());
-                        ViewGroup row = (ViewGroup) v.getParent();
-                        TextView textView = (TextView) row.findViewById(R.id.tripListLabelName);
-                        Toast.makeText(ctx, "Clicked on  - "+ textView.getText().toString(), Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(ctx, AddTripActivity.class);
-                        intent.putExtra(EXTRA_MESSAGE, hmap.get(textView.getText().toString()));
-                        startActivity(intent);
-                    }
-                });
-            }
-        });
     }
 
     @Override
@@ -313,7 +270,6 @@ public class TripListActivity extends AppCompatActivity {
     //Left Menu
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
-
         if(mToggle.onOptionsItemSelected(item)){
             return true;
         }
@@ -332,5 +288,9 @@ public class TripListActivity extends AppCompatActivity {
             }
         }
         return null;
+    }
+
+    public static HashMap<String, String> getTripMap(){
+        return hmap;
     }
 }

@@ -4,8 +4,8 @@
     <string name="menu_open">open</string>
     <string name="menu_close">close</string>
     <string name="logout">Logout</string>
-    <string name="trip_details">Trip Details</string>
-    <string name="bag_details">Bag Details</string>
+    <string name="trip_details">My Trips</string>
+    <string name="bag_details">Bags</string>
     <string name="title_activity_airline">AirlineActivity</string>
     <string name="app_heading">Suitcase Manager</string>
 </resources>
