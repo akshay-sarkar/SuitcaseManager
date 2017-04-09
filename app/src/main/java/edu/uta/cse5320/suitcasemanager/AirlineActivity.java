@@ -17,7 +17,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import edu.uta.cse5320.dao.AirlineAdapter;
 import edu.uta.cse5320.dao.AirlineData;

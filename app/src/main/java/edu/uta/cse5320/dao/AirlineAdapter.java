@@ -2,6 +2,7 @@ package edu.uta.cse5320.dao;
 /**
  * Created by Akshay on 3/28/2017.
  */
+
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -15,7 +16,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import edu.uta.cse5320.suitcasemanager.R;
 

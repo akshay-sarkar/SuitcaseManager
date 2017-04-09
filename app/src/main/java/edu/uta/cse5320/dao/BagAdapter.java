@@ -11,7 +11,9 @@ import android.widget.TextView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
+
 import edu.uta.cse5320.suitcasemanager.R;
 
 /**

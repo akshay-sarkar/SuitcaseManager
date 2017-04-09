@@ -53,7 +53,6 @@ import java.util.Map;
 import edu.uta.cse5320.dao.BagAdapter;
 import edu.uta.cse5320.dao.BagData;
 import edu.uta.cse5320.dao.BagHelper;
-import edu.uta.cse5320.dao.TripData;
 import edu.uta.cse5320.util.ApplicationConstant;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
