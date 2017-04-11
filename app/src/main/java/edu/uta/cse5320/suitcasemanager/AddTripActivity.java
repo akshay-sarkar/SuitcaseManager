@@ -1,5 +1,9 @@
 package edu.uta.cse5320.suitcasemanager;
 
+
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,7 +11,9 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -22,30 +28,45 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import edu.uta.cse5320.dao.TripData;
 import edu.uta.cse5320.dao.TripHelper;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class AddTripActivity extends AppCompatActivity {
+public class AddTripActivity extends AppCompatActivity{
 
-    private Button mSaveTripButton;
+    private Button mSaveTripButton, mBtnSetStartDate, mBtnSetEndDate;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private GoogleApiClient mGoogleApiClient;
     private DatabaseReference myDbRef;
     private Context ctx;
-    private EditText editTextTripName, editTextTripAirline, editTextTripDetails, editTextTripEndDate, editTextTripStartDate;
+    private EditText editTextTripName, editTextTripAirline, editTextTripDetails;
+    TextView editTextTripEndDate, editTextTripStartDate;
     private boolean isEditMode = false;
     private TripHelper tripHelperDB;
     private String message;
-
+    Calendar myCalendar;
+    DatePickerDialog.OnDateSetListener date;
+    boolean startDateTriggerFlag = false;
     // for font
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    private void updateLabel() {
+        String myFormat = "MM/dd/yy"; //In which you need put here
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+        if(startDateTriggerFlag)
+            editTextTripStartDate.setText(sdf.format(myCalendar.getTime()));
+        else
+            editTextTripEndDate.setText(sdf.format(myCalendar.getTime()));
     }
 
     @Override
@@ -56,19 +77,48 @@ public class AddTripActivity extends AppCompatActivity {
         editTextTripName = (EditText) findViewById(R.id.editTextTripName);
         editTextTripAirline = (EditText) findViewById(R.id.editTextTripAirline);
         editTextTripDetails = (EditText) findViewById(R.id.editTextTripDetails);
-        editTextTripEndDate = (EditText) findViewById(R.id.editTextTripEndDate);
-        editTextTripStartDate = (EditText) findViewById(R.id.editTextTripStartDate);
+        editTextTripEndDate = (TextView) findViewById(R.id.editTextTripEndDate);
+        editTextTripStartDate = (TextView) findViewById(R.id.editTextTripStartDate);
         mSaveTripButton = (Button) findViewById(R.id.saveTripData);
+        mBtnSetStartDate = (Button) findViewById(R.id.btnSetStartDate);
+        mBtnSetEndDate = (Button) findViewById(R.id.btnSetEndDate);
+        myCalendar = Calendar.getInstance();
 
+        date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel();
+            }
+        };
 
+        mBtnSetStartDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startDateTriggerFlag = true;
+                new DatePickerDialog(AddTripActivity.this, date , myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
 
+        mBtnSetEndDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startDateTriggerFlag = false;
+                new DatePickerDialog(AddTripActivity.this, date , myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
         ctx = getApplicationContext();
         mAuth = FirebaseAuth.getInstance();
         /* Getting Data from the data */
         Intent intent = getIntent();
         message = intent.getStringExtra(TripListActivity.EXTRA_MESSAGE);
         //Toast.makeText(ctx, "Message::  "+message, Toast.LENGTH_SHORT).show();
-
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();

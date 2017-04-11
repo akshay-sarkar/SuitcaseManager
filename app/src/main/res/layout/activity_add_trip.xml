@@ -49,7 +49,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="17dp"
                 android:editable="false"
-                android:ems="10"
+                android:ems="8"
                 android:hint="Trip Name"
                 android:inputType="textPersonName" />
 
@@ -64,16 +64,25 @@
                 android:textSize="18sp"
                 android:layout_marginLeft="20dp"/>
 
-            <EditText
+            <TextView
                 android:id="@+id/editTextTripStartDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ems="10"
                 android:inputType="textPersonName"
                 android:text=""
                 android:layout_alignBaseline="@+id/textViewTripStartDate"
                 android:layout_alignBottom="@+id/textViewTripStartDate"
-                android:layout_alignEnd="@+id/editTextTripName" />
+                android:layout_alignStart="@+id/editTextTripName" />
+
+            <Button
+                android:id="@+id/btnSetStartDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SET"
+                android:layout_alignBaseline="@+id/editTextTripStartDate"
+                android:layout_alignEnd="@+id/editTextTripName"
+                android:layout_marginLeft="5dp"
+                android:tag="btnSetStartDate"/>
 
             <TextView
                 android:id="@+id/textViewTripEndDate"
@@ -86,16 +95,24 @@
                 android:text="Trip End Date"
                 android:textSize="18sp" />
 
-            <EditText
+            <TextView
                 android:id="@+id/editTextTripEndDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ems="10"
                 android:inputType="textPersonName"
                 android:text=""
                 android:layout_alignBaseline="@+id/textViewTripEndDate"
                 android:layout_alignBottom="@+id/textViewTripEndDate"
-                android:layout_alignEnd="@+id/editTextTripStartDate" />
+                android:layout_alignStart="@+id/editTextTripStartDate" />
+
+            <Button
+                android:id="@+id/btnSetEndDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SET"
+                android:layout_alignBaseline="@+id/editTextTripEndDate"
+                android:layout_alignEnd="@+id/editTextTripName"
+                android:layout_marginLeft="5dp"/>
 
             <TextView
                 android:id="@+id/textViewTripAirline"
@@ -112,12 +129,12 @@
                 android:id="@+id/editTextTripAirline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ems="10"
+                android:ems="8"
                 android:inputType="textPersonName"
                 android:text=""
                 android:layout_alignBaseline="@+id/textViewTripAirline"
                 android:layout_alignBottom="@+id/textViewTripAirline"
-                android:layout_alignEnd="@+id/editTextTripEndDate" />
+                android:layout_alignStart="@+id/editTextTripEndDate" />
 
             <TextView
                 android:id="@+id/textViewTicketDetails"

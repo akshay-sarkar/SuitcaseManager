@@ -63,6 +63,12 @@ public class TripListActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private ActionBarDrawerToggle mToggle;
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finishAffinity();
+    }
+
     // for custom font
     @Override
     protected void attachBaseContext(Context newBase) {

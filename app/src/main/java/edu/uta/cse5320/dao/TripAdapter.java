@@ -51,6 +51,9 @@ public class TripAdapter extends ArrayAdapter<TripData> {
         if (tripData != null) {
             TextView tripName = (TextView) convertView.findViewById(R.id.tripListLabelName);
             TextView tripAirline = (TextView) convertView.findViewById(R.id.textViewAirline);
+            TextView tripStartDate = (TextView) convertView.findViewById(R.id.textViewStartDateVal);
+            TextView tripEndDate = (TextView) convertView.findViewById(R.id.textViewEndDateVal);
+
             ImageView imageViewEdit = (ImageView) convertView.findViewById(R.id.imageViewEdit);
             ImageView imageViewDelete = (ImageView) convertView.findViewById(R.id.imageViewDelete);
 
@@ -60,6 +63,21 @@ public class TripAdapter extends ArrayAdapter<TripData> {
             if(tripAirline != null && !tripData.getTripAirlineName().isEmpty()){
                 tripAirline.setText(tripData.getTripAirlineName());
             }
+            if (tripStartDate != null) {
+                if(tripData.getTripStartDate().isEmpty()){
+                    tripStartDate.setText("-");
+                }else{
+                    tripStartDate.setText(tripData.getTripStartDate());
+                }
+            }
+            if (tripEndDate != null) {
+                if(tripData.getTripEndDate().isEmpty()){
+                    tripEndDate.setText("-");
+                }else{
+                    tripEndDate.setText(tripData.getTripEndDate());
+                }
+            }
+
             // Setting Listener for TripAdapter
             tripName.setTag(tripData.getTripName());
             tripName.setOnClickListener(new View.OnClickListener() {
