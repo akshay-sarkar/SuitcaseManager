@@ -94,6 +94,7 @@ public class TripListActivity extends AppCompatActivity {
                     mAuth.signOut();
                     Auth.GoogleSignInApi.signOut(mGoogleApiClient);
                 }else if(menuItem.getTitle().equals(ApplicationConstant.Airline_Information)) {
+                    mDrawerLayout.closeDrawer(Gravity.LEFT);
                     Intent intent = new Intent(ctx, AirlineActivity.class);
                     startActivity(intent);
                 }else{

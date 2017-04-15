@@ -6,6 +6,7 @@
     android:id="@+id/activity_trip_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorGrey"
     tools:context="edu.uta.cse5320.suitcasemanager.TripListActivity">
 
     <RelativeLayout

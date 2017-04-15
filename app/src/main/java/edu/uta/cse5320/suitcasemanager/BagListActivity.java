@@ -15,6 +15,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -110,6 +111,7 @@ public class BagListActivity extends AppCompatActivity {
                     mAuth.signOut();
                     Auth.GoogleSignInApi.signOut(mGoogleApiClient);
                 }else if(menuItem.getTitle().equals(ApplicationConstant.Airline_Information)) {
+                    mDrawerLayout.closeDrawer(Gravity.LEFT);
                     Intent intent = new Intent(ctx, AirlineActivity.class);
                     startActivity(intent);
                 }else if(menuItem.getTitle().equals(ApplicationConstant.Home)) {

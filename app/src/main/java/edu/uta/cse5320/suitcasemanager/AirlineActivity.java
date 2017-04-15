@@ -2,14 +2,26 @@ package edu.uta.cse5320.suitcasemanager;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,8 +43,21 @@ public class AirlineActivity extends AppCompatActivity {
     EditText editSearch;
     ArrayList<AirlineData> airlineArrayList;
     private DatabaseReference myDbRef;
-
+    private DrawerLayout mDrawerLayout;
     private ProgressDialog progressDialog;
+    private ActionBarDrawerToggle mToggle;
+
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private Context ctx;
+    private GoogleApiClient mGoogleApiClient;
+    FirebaseUser user;
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finish();
+    }
 
     // for font
     @Override
@@ -45,19 +70,45 @@ public class AirlineActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_airline);
 
+        // Left Menu / Navigational Layout
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.activity_airline);
+        mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.menu_open, R.string.menu_close);
+        mDrawerLayout.addDrawerListener(mToggle);
+        mToggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        NavigationView nv = (NavigationView)findViewById(R.id.nv1);
+        nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                if(menuItem.getTitle().equals(ApplicationConstant.logout)) {
+                    mAuth.signOut();
+                    Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                }else if(menuItem.getTitle().equals(ApplicationConstant.Airline_Information)) {
+//                    Intent intent = new Intent(ctx, AirlineActivity.class);
+//                    startActivity(intent);
+                    mDrawerLayout.closeDrawer(Gravity.LEFT);
+                }else if(menuItem.getTitle().equals(ApplicationConstant.Home)) {
+                    finish();
+                }else{
+                    System.out.println("--- Reache Here -- "+ menuItem.getItemId());
+                }
+                return true;
+            }
+        });
+
         //Progress for operations
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Retrieving Your Data..");
         progressDialog.show();
 
+        mAuth = FirebaseAuth.getInstance();
+        ctx = getApplicationContext();
+        user = mAuth.getCurrentUser();
+
         airlineArrayList = new ArrayList<AirlineData>();
         // Locate the ListView in listview_main.xml
         list = (ListView) findViewById(R.id.listViewAirline);
         list.setTextFilterEnabled(true);
-//        airlineArrayList.add(new AirlineData("Air India", "http://www.google.com", "18008901231", "air_india@airindia.com"));
-//        airlineArrayList.add(new AirlineData("Air France", "http://www.google.com", "18008901231", "air_india@airindia.com"));
-//        airlineArrayList.add(new AirlineData("British Airways", "http://www.google.com", "18008901231", "air_india@airindia.com"));
-//        airlineArrayList.add(new AirlineData("American Airline", "http://www.google.com", "18008901231", "air_india@airindia.com"));
 
         // Pass results to ListViewAdapter Class
         adapter = new AirlineAdapter(this, R.layout.airline_list_layout, airlineArrayList);
@@ -180,5 +231,38 @@ public class AirlineActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {}
         });
     }
+    @Override
+    protected void onStart() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+        mGoogleApiClient.connect();
+        mAuthListener = new FirebaseAuth.AuthStateListener(){
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth){
+                if( firebaseAuth.getCurrentUser() == null){
+                    Intent loginScreenIntent = new Intent(AirlineActivity.this, MainActivity.class);
+                    loginScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(loginScreenIntent);
+                }
+            }
+        };
 
+        mAuth.addAuthStateListener(mAuthListener);
+
+        super.onStart();
+    }
+
+    //Left Menu
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+
+        if(mToggle.onOptionsItemSelected(item)){
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
