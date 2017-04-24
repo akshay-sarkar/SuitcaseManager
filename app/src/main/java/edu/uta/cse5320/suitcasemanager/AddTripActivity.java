@@ -81,13 +81,13 @@ public class AddTripActivity extends AppCompatActivity{
         else{
             String btnTripStartDate = mBtnSetStartDate.getText().toString();
             String btnTripEndDate = sdf.format(myCalendar.getTime());
-                if (btnTripStartDate.compareTo(btnTripEndDate) > 0) {
-                    mBtnSetEndDate.setText("MM/DD/YYYY");
-                    throw new MyException("End Date is Older than Start Date");
-                }
-                else{
-                    mBtnSetEndDate.setText(sdf.format(myCalendar.getTime()));
-                }
+            if (btnTripStartDate.compareTo(btnTripEndDate) > 0) {
+                mBtnSetEndDate.setText("MM/DD/YYYY");
+                throw new MyException("End Date is Older than Start Date");
+            }
+            else{
+                mBtnSetEndDate.setText(sdf.format(myCalendar.getTime()));
+            }
         }
     }
 
@@ -119,7 +119,7 @@ public class AddTripActivity extends AppCompatActivity{
                 }
                 catch (MyException e){
                     e.printStackTrace();
-                    Toast.makeText(ctx, "Error:  "+e, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "Error:  "+e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         };

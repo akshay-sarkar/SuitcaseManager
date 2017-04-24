@@ -18,8 +18,6 @@
         />
 
     <ImageView
-        android:focusable="false"
-        android:focusableInTouchMode="false"
         android:id="@+id/imageViewEdit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -53,7 +51,7 @@
         android:layout_alignBottom="@+id/imageViewEdit" />
 
     <TextView
-        android:id="@+id/textViewAirline"
+        android:id="@+id/textViewAirlineName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/tripListLabelName"
@@ -65,11 +63,22 @@
         />
 
     <TextView
+        android:id="@+id/textViewAirline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/textViewAirlineName"
+        android:layout_alignBaseline="@+id/textViewAirlineName"
+        android:text="Airline Name"
+        android:textSize="18sp"
+        android:layout_marginLeft="20dp"
+        />
+
+    <TextView
         android:id="@+id/textViewStartDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/tripListLabelName"
-        android:layout_below="@+id/textViewAirline"
+        android:layout_below="@+id/textViewAirlineName"
         android:layout_marginTop="25dp"
         android:text="Start Date"
         android:textSize="18sp"
@@ -82,8 +91,8 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/textViewStartDate"
         android:layout_alignBaseline="@+id/textViewStartDate"
+        android:layout_alignLeft="@id/textViewAirline"
         android:text="01/01/1990"
-        android:layout_marginLeft="20dp"
         />
 
     <TextView

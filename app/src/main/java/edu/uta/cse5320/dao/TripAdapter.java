@@ -1,5 +1,6 @@
 package edu.uta.cse5320.dao;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import edu.uta.cse5320.suitcasemanager.AddTripActivity;
+import edu.uta.cse5320.suitcasemanager.AirlineActivity;
 import edu.uta.cse5320.suitcasemanager.BagListActivity;
 import edu.uta.cse5320.suitcasemanager.R;
 import edu.uta.cse5320.suitcasemanager.TripListActivity;
@@ -43,7 +45,7 @@ public class TripAdapter extends ArrayAdapter<TripData> {
     public View getView(int position, View convertView, ViewGroup parent) {
         convertView = mInflater.inflate(mViewResourceId, null);
 
-        TripData tripData = tripDatas.get(position);
+        final TripData tripData = tripDatas.get(position);
 
 //        if(convertView == null){
 //            convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_user, parent, false);
@@ -56,6 +58,7 @@ public class TripAdapter extends ArrayAdapter<TripData> {
 
             ImageView imageViewEdit = (ImageView) convertView.findViewById(R.id.imageViewEdit);
             ImageView imageViewDelete = (ImageView) convertView.findViewById(R.id.imageViewDelete);
+            ImageView imageViewPublish = (ImageView) convertView.findViewById(R.id.imageViewPublish);
 
             if (tripName != null) {
                 tripName.setText(tripData.getTripName());
@@ -92,6 +95,20 @@ public class TripAdapter extends ArrayAdapter<TripData> {
                 }
             });
 
+            imageViewPublish.setTag(tripData.getTripName());
+            imageViewPublish.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    hashMapTrip = TripListActivity.getTripMap();
+                    Toast.makeText(context, "Airline Information For the Trip : "+ v.getTag().toString(), Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(context, AirlineActivity.class);
+                    intent.putExtra(EXTRA_MESSAGE, hashMapTrip.get(v.getTag().toString()));
+                    intent.putExtra("airlineName", tripData.getTripAirlineName());
+                    context.startActivity(intent);
+                }
+            });
+
+
             imageViewEdit.setTag(tripData.getTripName());
             imageViewEdit.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -108,7 +125,7 @@ public class TripAdapter extends ArrayAdapter<TripData> {
             imageViewDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(context, "Clicked on  - "+ v.getTag().toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Deleted  - "+ v.getTag().toString(), Toast.LENGTH_SHORT).show();
                     hashMapTrip = TripListActivity.getTripMap();
                     String key = hashMapTrip.get(v.getTag().toString());
                     if(!key.isEmpty()){

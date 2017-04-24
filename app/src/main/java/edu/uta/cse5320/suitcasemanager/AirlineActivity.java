@@ -14,8 +14,10 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -46,13 +48,13 @@ public class AirlineActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ProgressDialog progressDialog;
     private ActionBarDrawerToggle mToggle;
-
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private Context ctx;
     private GoogleApiClient mGoogleApiClient;
     FirebaseUser user;
-
+    Bundle extras;
+    private String airlineName;
     @Override
     public void onBackPressed() {
         super.onBackPressed();
@@ -76,7 +78,9 @@ public class AirlineActivity extends AppCompatActivity {
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         NavigationView nv = (NavigationView)findViewById(R.id.nv1);
+
         nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
@@ -90,7 +94,7 @@ public class AirlineActivity extends AppCompatActivity {
                 }else if(menuItem.getTitle().equals(ApplicationConstant.Home)) {
                     finish();
                 }else{
-                    System.out.println("--- Reache Here -- "+ menuItem.getItemId());
+                    System.out.println("--- Reached Here -- "+ menuItem.getItemId());
                 }
                 return true;
             }
@@ -117,7 +121,10 @@ public class AirlineActivity extends AppCompatActivity {
 
         // Locate the EditText in listview_main.xml
         editSearch = (EditText) findViewById(R.id.editTextTripAirlineSearch);
-
+        extras = getIntent().getExtras();
+        if(extras!=null){
+            airlineName = extras.getString("airlineName");
+        }
         // Capture Text in EditText
         editSearch.addTextChangedListener(new TextWatcher() {
 
@@ -150,7 +157,15 @@ public class AirlineActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
                 System.out.println(" onChildAdded"+dataSnapshot);
                 AirlineData airlineData = dataSnapshot.getValue(AirlineData.class);
-                airlineArrayList.add(airlineData);
+                if(airlineName!=null){
+                    if(airlineData.getAirlineName().equals(airlineName)){
+                        editSearch.setVisibility(View.GONE);
+                        airlineArrayList.add(airlineData);
+                    }
+                }
+                else{
+                    airlineArrayList.add(airlineData);
+                }
 
                 // Dimiss the dialog box
                 progressDialog.dismiss();
