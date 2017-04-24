@@ -8,4 +8,14 @@
     <string name="bag_details">Bags</string>
     <string name="title_activity_airline">AirlineActivity</string>
     <string name="app_heading">Suitcase Manager</string>
+    <string name="airline_prompt">Choose an Airline</string>
+    <string-array name="airline_array">
+        <item>Air India</item>
+        <item>Air France</item>
+        <item>British Airways</item>
+        <item>American Airlines</item>
+        <item>Tiger Airline</item>
+        <item>Other</item>
+    </string-array>
+
 </resources>

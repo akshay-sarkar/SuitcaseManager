@@ -10,9 +10,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,12 +48,13 @@ public class AddTripActivity extends AppCompatActivity{
     private GoogleApiClient mGoogleApiClient;
     private DatabaseReference myDbRef;
     private Context ctx;
-    private EditText editTextTripName, editTextTripAirline, editTextTripDetails;
-    TextView editTextTripEndDate, editTextTripStartDate;
+    private EditText editTextTripName, editTextTripDetails;
+    private Spinner spinnerTripAirline;
+    //TextView editTextTripEndDate, editTextTripStartDate;
     private boolean isEditMode = false;
     private TripHelper tripHelperDB;
     private String message;
-    Calendar myCalendar;
+    Calendar myCalendar,currDate;
     DatePickerDialog.OnDateSetListener date;
     boolean startDateTriggerFlag = false;
     // for font
@@ -60,13 +63,32 @@ public class AddTripActivity extends AppCompatActivity{
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
-    private void updateLabel() {
+    private void updateLabel() throws MyException{
         String myFormat = "MM/dd/yy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-        if(startDateTriggerFlag)
-            editTextTripStartDate.setText(sdf.format(myCalendar.getTime()));
-        else
-            editTextTripEndDate.setText(sdf.format(myCalendar.getTime()));
+
+        if(startDateTriggerFlag) {
+            String currentDate = sdf.format(currDate.getTime());
+            String btnTripStartDate = sdf.format(myCalendar.getTime());
+            if (currentDate.compareTo(btnTripStartDate) > 0) {
+                mBtnSetStartDate.setText("MM/DD/YYYY");
+                throw new MyException("Only Future Dates are Allowed");
+            }
+            else{
+                mBtnSetStartDate.setText(sdf.format(myCalendar.getTime()));
+            }
+        }
+        else{
+            String btnTripStartDate = mBtnSetStartDate.getText().toString();
+            String btnTripEndDate = sdf.format(myCalendar.getTime());
+                if (btnTripStartDate.compareTo(btnTripEndDate) > 0) {
+                    mBtnSetEndDate.setText("MM/DD/YYYY");
+                    throw new MyException("End Date is Older than Start Date");
+                }
+                else{
+                    mBtnSetEndDate.setText(sdf.format(myCalendar.getTime()));
+                }
+        }
     }
 
     @Override
@@ -75,14 +97,16 @@ public class AddTripActivity extends AppCompatActivity{
         setContentView(R.layout.activity_add_trip);
 
         editTextTripName = (EditText) findViewById(R.id.editTextTripName);
-        editTextTripAirline = (EditText) findViewById(R.id.editTextTripAirline);
+        //editTextTripAirline = (EditText) findViewById(R.id.editTextTripAirline);
+        spinnerTripAirline = (Spinner) findViewById(R.id.spinnerTripAirline);
         editTextTripDetails = (EditText) findViewById(R.id.editTextTripDetails);
-        editTextTripEndDate = (TextView) findViewById(R.id.editTextTripEndDate);
-        editTextTripStartDate = (TextView) findViewById(R.id.editTextTripStartDate);
+        //editTextTripEndDate = (TextView) findViewById(R.id.editTextTripEndDate);
+        //editTextTripStartDate = (TextView) findViewById(R.id.editTextTripStartDate);
         mSaveTripButton = (Button) findViewById(R.id.saveTripData);
         mBtnSetStartDate = (Button) findViewById(R.id.btnSetStartDate);
         mBtnSetEndDate = (Button) findViewById(R.id.btnSetEndDate);
         myCalendar = Calendar.getInstance();
+        currDate = Calendar.getInstance();
 
         date = new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -90,7 +114,13 @@ public class AddTripActivity extends AppCompatActivity{
                 myCalendar.set(Calendar.YEAR, year);
                 myCalendar.set(Calendar.MONTH, monthOfYear);
                 myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                updateLabel();
+                try{
+                    updateLabel();
+                }
+                catch (MyException e){
+                    e.printStackTrace();
+                    Toast.makeText(ctx, "Error:  "+e, Toast.LENGTH_SHORT).show();
+                }
             }
         };
 
@@ -107,10 +137,10 @@ public class AddTripActivity extends AppCompatActivity{
         mBtnSetEndDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startDateTriggerFlag = false;
-                new DatePickerDialog(AddTripActivity.this, date , myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                    startDateTriggerFlag = false;
+                    new DatePickerDialog(AddTripActivity.this, date, myCalendar
+                            .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                            myCalendar.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
         ctx = getApplicationContext();
@@ -180,20 +210,23 @@ public class AddTripActivity extends AppCompatActivity{
 
     public void saveTripDetails(){
         String editTripName = editTextTripName.getText().toString();
-        String editTripStartDate = editTextTripStartDate.getText().toString();
-        String editTripEndDate = editTextTripEndDate.getText().toString();
-        String editTripAirline = editTextTripAirline.getText().toString();
+        //String editTripStartDate = editTextTripStartDate.getText().toString();
+        //String editTripEndDate = editTextTripEndDate.getText().toString();
+        //String editTripAirline = editTextTripAirline.getText().toString();
+        String spinnerTextTripAirline = String.valueOf(spinnerTripAirline.getSelectedItem());
         String editTripDetails = editTextTripDetails.getText().toString();
+        String btnTripStartDate = mBtnSetStartDate.getText().toString();
+        String btnTripEndDate = mBtnSetEndDate.getText().toString();
 
         if(isEditMode){
-            TripData tripData = new TripData(editTripName, editTripStartDate, editTripEndDate, editTripAirline, editTripDetails );
+            TripData tripData = new TripData(editTripName, btnTripStartDate, btnTripEndDate, spinnerTextTripAirline, editTripDetails );
 
             //Updating the URL in Database
             Map<String, Object> updateTripDetails = new HashMap<String, Object>();
             updateTripDetails.put("tripName", editTripName);
-            updateTripDetails.put("tripStartDate", editTripStartDate);
-            updateTripDetails.put("tripEndDate", editTripEndDate);
-            updateTripDetails.put("tripAirlineName", editTripAirline);
+            updateTripDetails.put("tripStartDate", btnTripStartDate);
+            updateTripDetails.put("tripEndDate", btnTripEndDate);
+            updateTripDetails.put("tripAirlineName", spinnerTextTripAirline);
             updateTripDetails.put("tripDetails", editTripDetails);
 
             myDbRef.updateChildren(updateTripDetails);
@@ -202,12 +235,12 @@ public class AddTripActivity extends AppCompatActivity{
             Toast.makeText(ctx, "Trip Updated", Toast.LENGTH_SHORT).show();
         }else{
             /* Add Case*/
-            long id = tripHelperDB.addData(editTripName, editTripStartDate, editTripEndDate, editTripName, editTripDetails);
+            long id = tripHelperDB.addData(editTripName, btnTripStartDate, btnTripEndDate, editTripName, editTripDetails);
             if(id == -1){
                 System.out.println("Not Inserted");
             }
 
-            TripData tripData = new TripData(id, editTripName, editTripStartDate, editTripEndDate, editTripAirline, editTripDetails );
+            TripData tripData = new TripData(id, editTripName, btnTripStartDate, btnTripEndDate, spinnerTextTripAirline, editTripDetails );
             myDbRef.push().setValue(tripData); //add
             Toast.makeText(ctx, "Trip Created", Toast.LENGTH_SHORT).show();
         }
@@ -232,11 +265,12 @@ public class AddTripActivity extends AppCompatActivity{
             // Get Post object and use the values to update the UI
             TripData td = dataSnapshot.getValue(TripData.class);
             if(td != null){ // in case of delete issue persist
-                editTextTripName.setText(td.getTripName().toString());
-                editTextTripDetails.setText(td.getTripDetails().toString());
-                editTextTripAirline.setText(td.getTripAirlineName().toString());
-                editTextTripStartDate.setText(td.getTripStartDate().toString());
-                editTextTripEndDate.setText(td.getTripEndDate().toString());
+                editTextTripName.setText(td.getTripName());
+                editTextTripDetails.setText(td.getTripDetails());
+                spinnerTripAirline.setSelection(((ArrayAdapter<String>)spinnerTripAirline.getAdapter()).getPosition(td.getTripAirlineName()));
+                //editTextTripAirline.setText(td.getTripAirlineName());
+                mBtnSetStartDate.setText(td.getTripStartDate());
+                mBtnSetEndDate.setText(td.getTripEndDate());
             }
         }
 
