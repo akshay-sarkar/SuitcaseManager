@@ -38,6 +38,15 @@
             android:id="@+id/relativeLayout">
 
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="30dp"
+                android:text="*"
+                android:textSize="18sp"
+                android:layout_marginLeft="13dp"/>
+
+            <TextView
                 android:id="@+id/textViewTripName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -175,8 +184,16 @@
                 android:layout_below="@+id/editTextTripDetails"
                 android:text="Save" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/saveTripData"
+                android:layout_alignParentStart="true"
+                android:text="*Fields are mandatory"
+                android:textSize="12sp"
+                android:textColor="@android:color/holo_red_light"
+                android:layout_marginLeft="13dp"/>
         </RelativeLayout>
-
     </ScrollView>
 
 </RelativeLayout>

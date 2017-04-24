@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,9 +56,9 @@ public class AirlineAdapter extends ArrayAdapter<AirlineData> {
         AirlineData airlineData = airlinesList.get(position);
 
         if(airlineData !=null){
-            TextView airlineEmail = (TextView) view.findViewById(R.id.airlineEmail);
+            final TextView airlineEmail = (TextView) view.findViewById(R.id.airlineEmail);
             TextView airlineName = (TextView) view.findViewById(R.id.airlineName);
-            TextView airlineURL = (TextView) view.findViewById(R.id.airlineURL);
+            final TextView airlineURL = (TextView) view.findViewById(R.id.airlineURL);
             TextView airlinePhone = (TextView) view.findViewById(R.id.airlinePhone);
 
             if (airlineName != null) {
@@ -78,14 +79,32 @@ public class AirlineAdapter extends ArrayAdapter<AirlineData> {
                 // Send it off to the Activity-Chooser
                 context.startActivity(Intent.createChooser(emailIntent, "Send mail..."));
                  */
+                airlineEmail.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String emailAirline = airlineEmail.getText().toString();
+                        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                        emailIntent.setType("text/plain");
+                        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {emailAirline});
+                        try {
+                            mContext.startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+                        } catch (android.content.ActivityNotFoundException ex) {
+                            Toast.makeText(mContext, "There is no email client installed.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
             }
             if (airlineURL != null && !airlineData.getAirlineUrl().isEmpty()) {
                 airlineURL.setText(airlineData.getAirlineUrl());
                 airlineURL.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        TextView airlineURLTextView = (TextView) v.findViewById(R.id.airlineURL);
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(airlineURLTextView.getText().toString()));
+                        //TextView airlineURLTextView = (TextView) v.findViewById(R.id.airlineURL);
+                        String urlAirline = airlineURL.getText().toString();
+                        if(!urlAirline.startsWith("http://") && !urlAirline.startsWith("https://"))
+                            urlAirline = "http://" + urlAirline;
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlAirline));
                         mContext.startActivity(browserIntent);
                     }
                 });

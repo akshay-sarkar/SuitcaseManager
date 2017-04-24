@@ -217,36 +217,40 @@ public class AddTripActivity extends AppCompatActivity{
         String editTripDetails = editTextTripDetails.getText().toString();
         String btnTripStartDate = mBtnSetStartDate.getText().toString();
         String btnTripEndDate = mBtnSetEndDate.getText().toString();
+        if(editTripName.equals("")) {
+            Toast.makeText(ctx, "Trip Name cannot be empty", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            if(isEditMode){
+                TripData tripData = new TripData(editTripName, btnTripStartDate, btnTripEndDate, spinnerTextTripAirline, editTripDetails );
 
-        if(isEditMode){
-            TripData tripData = new TripData(editTripName, btnTripStartDate, btnTripEndDate, spinnerTextTripAirline, editTripDetails );
+                //Updating the URL in Database
+                Map<String, Object> updateTripDetails = new HashMap<String, Object>();
+                updateTripDetails.put("tripName", editTripName);
+                updateTripDetails.put("tripStartDate", btnTripStartDate);
+                updateTripDetails.put("tripEndDate", btnTripEndDate);
+                updateTripDetails.put("tripAirlineName", spinnerTextTripAirline);
+                updateTripDetails.put("tripDetails", editTripDetails);
 
-            //Updating the URL in Database
-            Map<String, Object> updateTripDetails = new HashMap<String, Object>();
-            updateTripDetails.put("tripName", editTripName);
-            updateTripDetails.put("tripStartDate", btnTripStartDate);
-            updateTripDetails.put("tripEndDate", btnTripEndDate);
-            updateTripDetails.put("tripAirlineName", spinnerTextTripAirline);
-            updateTripDetails.put("tripDetails", editTripDetails);
+                myDbRef.updateChildren(updateTripDetails);
 
-            myDbRef.updateChildren(updateTripDetails);
+                //myDbRef.setValue(tripData);//update
+                Toast.makeText(ctx, "Trip Updated", Toast.LENGTH_SHORT).show();
+            }else{
+                /* Add Case*/
+                long id = tripHelperDB.addData(editTripName, btnTripStartDate, btnTripEndDate, editTripName, editTripDetails);
+                if(id == -1){
+                    System.out.println("Not Inserted");
+                }
 
-            //myDbRef.setValue(tripData);//update
-            Toast.makeText(ctx, "Trip Updated", Toast.LENGTH_SHORT).show();
-        }else{
-            /* Add Case*/
-            long id = tripHelperDB.addData(editTripName, btnTripStartDate, btnTripEndDate, editTripName, editTripDetails);
-            if(id == -1){
-                System.out.println("Not Inserted");
+                TripData tripData = new TripData(id, editTripName, btnTripStartDate, btnTripEndDate, spinnerTextTripAirline, editTripDetails );
+                myDbRef.push().setValue(tripData); //add
+                Toast.makeText(ctx, "Trip Created", Toast.LENGTH_SHORT).show();
             }
-
-            TripData tripData = new TripData(id, editTripName, btnTripStartDate, btnTripEndDate, spinnerTextTripAirline, editTripDetails );
-            myDbRef.push().setValue(tripData); //add
-            Toast.makeText(ctx, "Trip Created", Toast.LENGTH_SHORT).show();
+            clearFormAndBack();
         }
 
         /* Clear Data and Move to Back Screen */
-        clearFormAndBack();
     }
 
     @Override
