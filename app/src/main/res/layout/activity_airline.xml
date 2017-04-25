@@ -12,10 +12,25 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/textViewAirlineHeading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Airline Information"
+            android:gravity="center"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="10dp"/>
+
         <EditText
             android:id="@+id/editTextTripAirlineSearch"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/textViewAirlineHeading"
             android:hint="Airline Name">
             <requestFocus />
         </EditText>
