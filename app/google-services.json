@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "681643837475-i2fmsl7lk5quu6939j3sbutc188o3c6a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.uta.cse5320.suitcasemanager",
+            "certificate_hash": "00d81e8eace27ae53efef0dbbd6c23f2eaeb448e"
+          }
+        },
+        {
           "client_id": "681643837475-b30ruidj2m8vctcdu1t4s548d7gdcs1c.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
