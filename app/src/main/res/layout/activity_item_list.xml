@@ -7,18 +7,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="edu.uta.cse5320.suitcasemanager.ItemListActivity">
-
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="510dp"
         android:background="@color/colorGrey">
 
+
         <android.support.design.widget.FloatingActionButton
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="20dp"
+            android:layout_below="@+id/listItems"
             android:layout_marginEnd="20dp"
             android:clickable="true"
             android:src="@drawable/ic_add_black_48dp"
@@ -38,7 +40,7 @@
             android:layout_marginStart="15dp" />
 
         <EditText
-            android:id="@+id/editItemName"
+            android:id="@+id/editItemName1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/textViewItemHeading"
@@ -47,7 +49,7 @@
             android:visibility="gone" />
 
         <EditText
-            android:id="@+id/editItemQuantity"
+            android:id="@+id/editItemQuantity1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -59,20 +61,22 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/editItemQuantity"
-            android:layout_alignEnd="@+id/editItemQuantity"
-            android:id="@+id/btnItemSave"
+            android:layout_below="@+id/editItemQuantity1"
+            android:layout_alignEnd="@+id/editItemQuantity1"
+            android:id="@+id/btnItemSave1"
             android:text="Save"
             android:visibility="gone"/>
 
+
         <ListView
             android:layout_width="match_parent"
-            android:layout_height="450dp"
+            android:layout_height="400dp"
             android:id="@+id/listItems"
-            android:layout_below="@+id/btnItemSave"
+            android:layout_below="@+id/btnItemSave1"
             android:layout_alignParentStart="true"
             android:layout_marginTop="11dp" />
     </RelativeLayout>
+</ScrollView>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nv2"

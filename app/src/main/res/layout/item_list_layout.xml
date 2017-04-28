@@ -8,23 +8,76 @@
         android:id="@+id/tripItemLabelName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Item name"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_centerVertical="true"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="15dp"/>
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:textSize="20sp"
+        android:layout_below="@+id/btnItemSave"/>
 
     <TextView
         android:id="@+id/tripItemLabelQuantity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Quantity name"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/itemEdit"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:textSize="20sp"
+        android:layout_below="@+id/btnItemSave"/>
+
+    <EditText
+        android:id="@+id/editItemName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:textSize="20sp"
+        android:visibility="gone"
+        android:ems="12"/>
+
+    <EditText
+        android:id="@+id/editItemQuantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="15dp"/>
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:textSize="20sp"
+        android:visibility="gone"
+        android:ems="2"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnItemSave"
+        android:layout_below="@+id/editItemQuantity"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"
+        android:visibility="gone"
+        android:text="Save" />
+
+    <Button
+        android:id="@+id/btnItemDelete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:text="Delete" />
+
+    <ImageView
+        android:id="@+id/itemEdit"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ic_edit_black_48dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="15dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:contentDescription="Edit Trip"
+        android:layout_marginTop="5dp"/>
 
 
 </RelativeLayout>

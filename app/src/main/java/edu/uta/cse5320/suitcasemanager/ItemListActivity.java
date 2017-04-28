@@ -18,6 +18,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -66,7 +67,6 @@ import static edu.uta.cse5320.dao.BagAdapter.hashMapBag;
 import static edu.uta.cse5320.suitcasemanager.TripListActivity.EXTRA_MESSAGE;
 import static edu.uta.cse5320.util.ApplicationConstant.bag_item_prop;
 import static edu.uta.cse5320.util.ApplicationConstant.bag_val;
-import static edu.uta.cse5320.util.ApplicationConstant.hashMapItem;
 import static edu.uta.cse5320.util.ApplicationConstant.root_prop;
 import static edu.uta.cse5320.util.ApplicationConstant.root_trip_prop;
 import static edu.uta.cse5320.util.ApplicationConstant.root_val;
@@ -79,11 +79,12 @@ public class ItemListActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private Context ctx;
-    private DatabaseReference myDbRef, imageURLRef;
+    public static DatabaseReference myDbRef, imageURLRef;
     private StorageReference mStorageRef;
     private ListView listItemTrip;
     private boolean isEditMode = false;
     private EditText edtItemName, edtItemQuantity;
+    private View v1;
     private Button btnSave;
     ItemAdapter myAdapter;
     private String message;
@@ -115,10 +116,10 @@ public class ItemListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
-
-        edtItemName = (EditText) findViewById(R.id.editItemName);
-        edtItemQuantity = (EditText) findViewById(R.id.editItemQuantity);
-        btnSave = (Button) findViewById(R.id.btnItemSave);
+        v1 = new View(this);
+        edtItemName = (EditText) findViewById(R.id.editItemName1);
+        edtItemQuantity = (EditText) findViewById(R.id.editItemQuantity1);
+        btnSave = (Button) findViewById(R.id.btnItemSave1);
         // Left Menu / Navigational Layout
         mDrawerLayout = (DrawerLayout) findViewById(R.id.activity_item_list);
         mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.menu_open, R.string.menu_close);
@@ -274,47 +275,33 @@ public class ItemListActivity extends AppCompatActivity {
         myAdapter.setNotifyOnChange(true);
         listItemTrip.setAdapter(myAdapter);
 
+
+        listItemTrip.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                edtItemName.setVisibility(View.GONE);
+                edtItemQuantity.setVisibility(View.GONE);
+                btnSave.setVisibility(View.GONE);
+            }
+        });
         /* Floating Button for moving to Add Items */
         FloatingActionButton myFab = (FloatingActionButton) findViewById(R.id.floatingButtonAddItem);
         myFab.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                createItems();
+                edtItemName.setVisibility(View.VISIBLE);
+                edtItemQuantity.setVisibility(View.VISIBLE);
+                btnSave.setVisibility(View.VISIBLE);
             }
         });
-
-        /* List Listner */
-       listItemTrip.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        v1.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final TextView textItemName = (TextView) view.findViewById(R.id.tripItemLabelName);
-                final TextView textItemQuantity = (TextView) view.findViewById(R.id.tripItemLabelQuantity);
-                textItemName.setTag(textItemName.getText());
-                textItemName.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        isEditMode = true;
-                        edtItemName.setVisibility(View.VISIBLE);
-                        edtItemQuantity.setVisibility(View.VISIBLE);
-                        btnSave.setVisibility(View.VISIBLE);
-                        edtItemName.setText(textItemName.getText().toString());
-                        edtItemQuantity.setText(textItemQuantity.getText().toString());
-                        String msg = hashMapItem.get(v.getTag().toString());
-                        updateItems(msg);
-                    }
-                });
+            public boolean onTouch(View v, MotionEvent event) {
+                edtItemName.setVisibility(View.GONE);
+                edtItemQuantity.setVisibility(View.GONE);
+                btnSave.setVisibility(View.GONE);
+                return false;
             }
         });
-
-        if(isEditMode){
-            //dbUpdates(myDbRef);
-            myDbRef.addValueEventListener(postListener);
-        }
-    }
-
-    public void createItems(){
-        edtItemName.setVisibility(View.VISIBLE);
-        edtItemQuantity.setVisibility(View.VISIBLE);
-        btnSave.setVisibility(View.VISIBLE);
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -336,26 +323,7 @@ public class ItemListActivity extends AppCompatActivity {
                 }
             }
         });
-    }
 
-    public void updateItems(String msg){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        myDbRef = database.getReference(root_prop).child(root_val).child(root_trip_prop).child(trip_val).child(trip_bag_prop).child(bag_val).child(bag_item_prop).child(msg);
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Map<String, Object> updateTripDetails = new HashMap<String, Object>();
-                updateTripDetails.put("itemName", edtItemName.getText().toString());
-                updateTripDetails.put("itemQuantity", Integer.parseInt(edtItemQuantity.getText().toString()));
-                myDbRef.updateChildren(updateTripDetails);
-                Toast.makeText(ctx, "Item Updated", Toast.LENGTH_SHORT).show();
-                edtItemName.setVisibility(View.GONE);
-                edtItemQuantity.setVisibility(View.GONE);
-                btnSave.setVisibility(View.GONE);
-                isEditMode = false;
-                updateListView();
-            }
-        });
     }
 
 
@@ -398,25 +366,6 @@ public class ItemListActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-    ValueEventListener postListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            // Get Post object and use the values to update the UI
-            ItemData td = dataSnapshot.getValue(ItemData.class);
-            if(td != null){ // in case of delete issue persist
-                edtItemName.setText(td.getItemName());
-                edtItemQuantity.setText(td.getItemQuantity());
-            }
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-            // Getting Post failed, log a message
-            //Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-            // ...
-        }
-    };
     public static HashMap<String, String> getItemMap(){
         return hmap;
     }

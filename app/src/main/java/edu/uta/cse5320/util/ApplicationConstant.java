@@ -16,8 +16,6 @@ public class ApplicationConstant {
     public static String trip_val;
     public static String bag_val;
     public static String root_val;
-    public static HashMap<String, String> hashMapItem;
-
 
     //Right Menu Strings
     public static final String logout = "Logout";
