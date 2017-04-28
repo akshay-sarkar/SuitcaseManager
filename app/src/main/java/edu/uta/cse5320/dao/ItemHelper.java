@@ -15,9 +15,6 @@ public class ItemHelper extends SQLiteOpenHelper {
     public static final String COL1 = "ID";
     public static final String COL2 = "itemName";
     public static final String COL3 = "itemQuantity";
-    public static final String COL4 = "imageUrl1";
-    public static final String COL5 = "imageUrl2";
-    public static final String COL6 = "imageUrl3";
 
     public ItemHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -27,10 +24,7 @@ public class ItemHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String createTable = "CREATE TABLE " + TABLE_NAME + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COL2 + " TEXT," +
-                COL3 + " TEXT," +
-                COL4 + " TEXT," +
-                COL5 + " TEXT," +
-                COL6 + " TEXT)";
+                COL3 + " TEXT)";
         db.execSQL(createTable);
     }
 
@@ -40,42 +34,33 @@ public class ItemHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public long addData(String itemName, int itemQuantity, String imageUrl1, String imageUrl2, String imageUrl3) {
+    public long addData(String itemName, int itemQuantity) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL2, itemName);
         contentValues.put(COL3, itemQuantity);
-        contentValues.put(COL4, imageUrl1);
-        contentValues.put(COL5, imageUrl2);
-        contentValues.put(COL6, imageUrl3);
 
         long result = db.insert(TABLE_NAME, null, contentValues);
         return result;
     }
 
-    public void addDataCompleteSync(long id, String itemName, int itemQuantity, String imageUrl1, String imageUrl2, String imageUrl3){
+    public void addDataCompleteSync(long id, String itemName, int itemQuantity){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL1, id);
         contentValues.put(COL2, itemName);
         contentValues.put(COL3, itemQuantity);
-        contentValues.put(COL4, imageUrl1);
-        contentValues.put(COL5, imageUrl2);
-        contentValues.put(COL6, imageUrl3);
 
         db.insert(TABLE_NAME, null, contentValues);
     }
 
 
-    public boolean updateDetails(long rowId, String itemName, int itemQuantity, String imageUrl1, String imageUrl2, String imageUrl3)
+    public boolean updateDetails(long rowId, String itemName, int itemQuantity)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL2, itemName);
         contentValues.put(COL3, itemQuantity);
-        contentValues.put(COL4, imageUrl1);
-        contentValues.put(COL5, imageUrl2);
-        contentValues.put(COL6, imageUrl3);
         int i =  db.update(TABLE_NAME, contentValues, "ID=" + rowId, null);
         return i > 0;
     }

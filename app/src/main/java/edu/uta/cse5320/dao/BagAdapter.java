@@ -1,20 +1,26 @@
 package edu.uta.cse5320.dao;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import edu.uta.cse5320.suitcasemanager.BagListActivity;
+import edu.uta.cse5320.suitcasemanager.ItemListActivity;
 import edu.uta.cse5320.suitcasemanager.R;
+import edu.uta.cse5320.suitcasemanager.TripListActivity;
 
 /**
  * Created by Akshay on 3/16/2017.
@@ -28,6 +34,9 @@ public class BagAdapter extends ArrayAdapter<BagData>{
     private Context context;
     private DatabaseReference myDbRef, imageURLRef;
     private StorageReference mStorageRef;
+    public static final String EXTRA_MESSAGE = "edu.uta.cse5320.MESSAGE";
+    public static HashMap<String, String> hashMapBag;
+
 
     public BagAdapter(Context context, int textViewResourceId, ArrayList<BagData> bagData, DatabaseReference myDBRef, StorageReference myStorageRef) {
         super(context, textViewResourceId, bagData);
@@ -42,7 +51,7 @@ public class BagAdapter extends ArrayAdapter<BagData>{
     public View getView(int position, View convertView, final ViewGroup parent) {
 
 
-        BagData bagData = bagDatas.get(position);
+        final BagData bagData = bagDatas.get(position);
 
         if (bagData != null) {
             convertView = mInflater.inflate(mViewResourceId, null);
@@ -53,6 +62,18 @@ public class BagAdapter extends ArrayAdapter<BagData>{
 
             if (bagName != null) {
                 bagName.setText(bagData.getBagName());
+                bagName.setTag(bagData.getBagName());
+                bagName.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //int position = listViewTrip.getPositionForView((View) v.getParent());
+                        Toast.makeText(context, "Clicked on  - "+ v.getTag().toString(), Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(context, ItemListActivity.class);
+                        hashMapBag = BagListActivity.getTripMap();
+                        intent.putExtra(EXTRA_MESSAGE, hashMapBag.get(v.getTag().toString()));
+                        context.startActivity(intent);
+                    }
+                });
             }
             if(imageView1 != null && bagData.getImageUrl1()!=null && !bagData.getImageUrl1().isEmpty()){
                 Picasso.with(context)
@@ -102,6 +123,7 @@ public class BagAdapter extends ArrayAdapter<BagData>{
                         .error(R.drawable.ic_add_a_photo_black_48dp)
                         .into(imageView3);
             }
+
 
         }
 

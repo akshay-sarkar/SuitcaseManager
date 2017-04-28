@@ -42,6 +42,8 @@ import edu.uta.cse5320.dao.TripHelper;
 import edu.uta.cse5320.util.ApplicationConstant;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+import static edu.uta.cse5320.util.ApplicationConstant.root_val;
+
 public class TripListActivity extends AppCompatActivity {
     //private Button mLogoutBtn;
     private FirebaseAuth mAuth;
@@ -115,12 +117,13 @@ public class TripListActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         ctx = getApplicationContext();
         user = mAuth.getCurrentUser();
+        root_val = user.getUid();
 
         tripDataList = new ArrayList<>();
         tripHelperDB = new TripHelper(this);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        myDbRef = database.getReference(ApplicationConstant.root_prop).child(user.getUid()).child(ApplicationConstant.root_trip_prop);
+        myDbRef = database.getReference(ApplicationConstant.root_prop).child(root_val).child(ApplicationConstant.root_trip_prop);
         hmap = new HashMap<String, String>();
         //dbUpdates(myDbRef);
 

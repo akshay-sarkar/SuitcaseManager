@@ -222,7 +222,7 @@ public class AddTripActivity extends AppCompatActivity{
         }
         else{
             if(isEditMode){
-                TripData tripData = new TripData(editTripName, btnTripStartDate, btnTripEndDate, spinnerTextTripAirline, editTripDetails );
+                //TripData tripData = new TripData(editTripName, btnTripStartDate, btnTripEndDate, spinnerTextTripAirline, editTripDetails );
 
                 //Updating the URL in Database
                 Map<String, Object> updateTripDetails = new HashMap<String, Object>();

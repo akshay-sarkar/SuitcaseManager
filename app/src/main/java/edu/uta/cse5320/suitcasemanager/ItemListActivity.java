@@ -21,6 +21,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -55,8 +58,20 @@ import java.util.Map;
 import edu.uta.cse5320.dao.ItemAdapter;
 import edu.uta.cse5320.dao.ItemData;
 import edu.uta.cse5320.dao.ItemHelper;
+import edu.uta.cse5320.dao.TripData;
 import edu.uta.cse5320.util.ApplicationConstant;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import static edu.uta.cse5320.dao.BagAdapter.hashMapBag;
+import static edu.uta.cse5320.suitcasemanager.TripListActivity.EXTRA_MESSAGE;
+import static edu.uta.cse5320.util.ApplicationConstant.bag_item_prop;
+import static edu.uta.cse5320.util.ApplicationConstant.bag_val;
+import static edu.uta.cse5320.util.ApplicationConstant.hashMapItem;
+import static edu.uta.cse5320.util.ApplicationConstant.root_prop;
+import static edu.uta.cse5320.util.ApplicationConstant.root_trip_prop;
+import static edu.uta.cse5320.util.ApplicationConstant.root_val;
+import static edu.uta.cse5320.util.ApplicationConstant.trip_bag_prop;
+import static edu.uta.cse5320.util.ApplicationConstant.trip_val;
 
 public class ItemListActivity extends AppCompatActivity {
 
@@ -67,8 +82,13 @@ public class ItemListActivity extends AppCompatActivity {
     private DatabaseReference myDbRef, imageURLRef;
     private StorageReference mStorageRef;
     private ListView listItemTrip;
+    private boolean isEditMode = false;
+    private EditText edtItemName, edtItemQuantity;
+    private Button btnSave;
     ItemAdapter myAdapter;
-    HashMap<String, String> hmap ;
+    private String message;
+    private static HashMap<String, String> hmap ;
+    private ItemData itemDataVal;
     //List<String> itemArray ;
     String TAG = "Suitcase Manager::ItemScreen";
     int index = 1, i = 1;
@@ -78,7 +98,6 @@ public class ItemListActivity extends AppCompatActivity {
     String mCurrentPhotoPath;
     Uri photoURI;
     String lastTouchedImageView;
-    private String tripID ,itemID;
     private ItemHelper itemHelperDB;
     ArrayList<ItemData> itemDataList;
 
@@ -97,6 +116,9 @@ public class ItemListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
 
+        edtItemName = (EditText) findViewById(R.id.editItemName);
+        edtItemQuantity = (EditText) findViewById(R.id.editItemQuantity);
+        btnSave = (Button) findViewById(R.id.btnItemSave);
         // Left Menu / Navigational Layout
         mDrawerLayout = (DrawerLayout) findViewById(R.id.activity_item_list);
         mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.menu_open, R.string.menu_close);
@@ -131,7 +153,7 @@ public class ItemListActivity extends AppCompatActivity {
 
         /* Getting Data from the data */
         Intent intent = getIntent();
-        tripID = intent.getStringExtra(TripListActivity.EXTRA_MESSAGE);
+        bag_val = intent.getStringExtra(EXTRA_MESSAGE);
 
         itemHelperDB = new ItemHelper(this);
         itemDataList = new ArrayList<>();
@@ -146,7 +168,7 @@ public class ItemListActivity extends AppCompatActivity {
         user = mAuth.getCurrentUser();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        myDbRef = database.getReference("test").child(user.getUid()).child("Items").child(tripID).child("Items");
+        myDbRef = database.getReference(root_prop).child(root_val).child(root_trip_prop).child(trip_val).child(trip_bag_prop).child(bag_val).child(bag_item_prop);
         mStorageRef = FirebaseStorage.getInstance().getReference();
 
         //to check if its item details are empty and removing the progress dialog
@@ -171,6 +193,7 @@ public class ItemListActivity extends AppCompatActivity {
                 progressDialog.dismiss();
                 ++index;
                 ItemData itemData = dataSnapshot.getValue(ItemData.class);
+                itemDataVal = itemData;
 
                 //Key - Value : TripName - f_id
                 hmap.put(itemData.getItemName(), dataSnapshot.getKey());
@@ -179,7 +202,7 @@ public class ItemListActivity extends AppCompatActivity {
                 int count = itemHelperDB.getListContent(itemData.getId());
                 if(count <= 0){
                     System.out.println("Not Inserted!! Inserting Now..");
-                    itemHelperDB.addDataCompleteSync(itemData.getId(), itemData.getItemName(), itemData.getItemQuantity(), itemData.getImageUrl1(),itemData.getImageUrl2(),itemData.getImageUrl3());
+                    itemHelperDB.addDataCompleteSync(itemData.getId(), itemData.getItemName(), itemData.getItemQuantity());
                 }
 
                 /* Adding in List */
@@ -189,24 +212,23 @@ public class ItemListActivity extends AppCompatActivity {
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {
                 System.out.println(TAG + "onChildChanged" );
-                ItemData itemData = dataSnapshot.getValue(ItemData.class);
+                ItemData itemDat = dataSnapshot.getValue(ItemData.class);
 
-                if(itemData != null){
-
+                if(itemDat != null){
                     /* Updating data in DB*/
-                    boolean flag = itemHelperDB.updateDetails(itemData.getId(), itemData.getItemName(), itemData.getItemQuantity(), itemData.getImageUrl1(),itemData.getImageUrl2(),itemData.getImageUrl3());
+                    boolean flag = itemHelperDB.updateDetails(itemDat.getId(), itemDat.getItemName(), itemDat.getItemQuantity());
 
                     /* updating in List */
                     if(flag){
                         Iterator<ItemData> itr = itemDataList.iterator();
                         while (itr.hasNext()) {
                             ItemData element = itr.next();
-                            if(element.getId() == itemData.getId()) {
+                            if(element.getId() == itemDat.getId()) {
                                 itemDataList.remove(element);
                                 break;
                             }
                         }
-                        itemDataList.add( itemData);
+                        itemDataList.add( itemDat);
                         myAdapter.notifyDataSetChanged();
                         updateListView();
                     }
@@ -261,146 +283,81 @@ public class ItemListActivity extends AppCompatActivity {
         });
 
         /* List Listner */
-       /* listItemTrip.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-
+       listItemTrip.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final ImageView imageViewItemPicture1 = (ImageView) view.findViewById(R.id.imageViewItemPicture1);
-                final ImageView imageViewItemPicture2 = (ImageView) view.findViewById(R.id.imageViewItemPicture2);
-                final ImageView imageViewItemPicture3 = (ImageView) view.findViewById(R.id.imageViewItemPicture3);
-
-                imageViewItemPicture1.setOnClickListener(new View.OnClickListener() {
+                final TextView textItemName = (TextView) view.findViewById(R.id.tripItemLabelName);
+                final TextView textItemQuantity = (TextView) view.findViewById(R.id.tripItemLabelQuantity);
+                textItemName.setTag(textItemName.getText());
+                textItemName.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ViewGroup row = (ViewGroup) v.getParent();
-                        TextView textView = (TextView) row.findViewById(R.id.tripItemLabelName);
-                        String itemID = hmap.get(textView.getText().toString());
-                        System.out.println(TAG+" Icon of  - "+ textView.getText().toString() +"Delete : "+itemID);
-                        imageURLRef = myDbRef.child(itemID);
-                        //myDbRef.child(key).setValue(null);
-                        dispatchTakePictureIntent(imageViewItemPicture1);
+                        isEditMode = true;
+                        edtItemName.setVisibility(View.VISIBLE);
+                        edtItemQuantity.setVisibility(View.VISIBLE);
+                        btnSave.setVisibility(View.VISIBLE);
+                        edtItemName.setText(textItemName.getText().toString());
+                        edtItemQuantity.setText(textItemQuantity.getText().toString());
+                        String msg = hashMapItem.get(v.getTag().toString());
+                        updateItems(msg);
                     }
                 });
-                imageViewItemPicture2.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ViewGroup row = (ViewGroup) v.getParent();
-                        TextView textView = (TextView) row.findViewById(R.id.tripItemLabelName);
-                        String itemID = hmap.get(textView.getText().toString());
-                        System.out.println(TAG+" Icon of  - "+ textView.getText().toString() +"Delete : "+itemID);
-                        imageURLRef = myDbRef.child(itemID);
-                        //myDbRef.child(key).setValue(null);
-                        dispatchTakePictureIntent(imageViewItemPicture2);
-                    }
-                });
-                imageViewItemPicture3.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ViewGroup row = (ViewGroup) v.getParent();
-                        TextView textView = (TextView) row.findViewById(R.id.tripItemLabelName);
-                        String itemID = hmap.get(textView.getText().toString());
-                        System.out.println(TAG+" Icon of  - "+ textView.getText().toString() +"Delete : "+itemID);
-                        imageURLRef = myDbRef.child(itemID);
-                        //myDbRef.child(key).setValue(null);
-                        dispatchTakePictureIntent(imageViewItemPicture3);
-                    }
-                });
+            }
+        });
 
-            }
-        }); */
-    }
-
-    private void dispatchTakePictureIntent(ImageView imageViewItemPicture) {
-        lastTouchedImageView =  getResources().getResourceEntryName(imageViewItemPicture.getId());
-        lastTouchedImageView = "imageUrl" + lastTouchedImageView.charAt(lastTouchedImageView.length()-1);
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        //startActivityForResult(intent1, CAMERA_REQUEST_CODE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                photoURI = FileProvider.getUriForFile(this, "edu.uta.cse5320.suitcasemanager.fileprovider", photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
-            }
+        if(isEditMode){
+            //dbUpdates(myDbRef);
+            myDbRef.addValueEventListener(postListener);
         }
-    }
-
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = image.getAbsolutePath();
-        return image;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK){
-            progressDialog.setMessage("Uploading Image..");
-            progressDialog.show();
-
-            FirebaseUser user = mAuth.getCurrentUser();
-            StorageReference filePath = mStorageRef.child("Photos").child(user.getUid()).child(tripID).child(photoURI.getLastPathSegment());
-
-            filePath.putFile(photoURI)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            // Get a URL to the uploaded content
-                            @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
-
-                            //Updating the URL in Database
-                            Map<String, Object> hopperUpdates = new HashMap<String, Object>();
-                            hopperUpdates.put(lastTouchedImageView, downloadUrl.toString());
-
-                            imageURLRef.updateChildren(hopperUpdates);
-
-                            progressDialog.dismiss();
-                            Toast.makeText(ctx, "Image Uploade Finished...", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            Toast.makeText(ctx, "Upload Failed!", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        }
-
     }
 
     public void createItems(){
-
-        String editItemName = "Item Item-"+index;
-        int editItemItems = 12;//editTextTripStartDate.getText().toString();
-
-        long id = itemHelperDB.addData(editItemName, editItemItems, "", "", "");
-        if(id == -1){
-            System.out.println("Not Inserted");
-        }
-        ItemData itemData = new ItemData(id, editItemName, editItemItems, "", "", "");
-        myDbRef.push().setValue(itemData);
-        Toast.makeText(ctx, "Item Added", Toast.LENGTH_SHORT).show();
+        edtItemName.setVisibility(View.VISIBLE);
+        edtItemQuantity.setVisibility(View.VISIBLE);
+        btnSave.setVisibility(View.VISIBLE);
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (edtItemName.getText().toString().equals("") || edtItemQuantity.getText().toString().equals("")) {
+                    Toast.makeText(ctx, "Item Name and Quantity Cannot be empty", Toast.LENGTH_SHORT).show();
+                } else {
+                    String itemName = String.valueOf(edtItemName.getText());
+                    int itemQuantity = Integer.parseInt(String.valueOf(edtItemQuantity.getText()));
+                    long id = itemHelperDB.addData(itemName, itemQuantity);
+                    if (id == -1) {
+                        System.out.println("Not Inserted");
+                    }
+                    ItemData itemData = new ItemData(id, itemName, itemQuantity);
+                    myDbRef.push().setValue(itemData);
+                    edtItemName.setVisibility(View.GONE);
+                    edtItemQuantity.setVisibility(View.GONE);
+                    btnSave.setVisibility(View.GONE);
+                    Toast.makeText(ctx, "Item Added", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
+
+    public void updateItems(String msg){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        myDbRef = database.getReference(root_prop).child(root_val).child(root_trip_prop).child(trip_val).child(trip_bag_prop).child(bag_val).child(bag_item_prop).child(msg);
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Map<String, Object> updateTripDetails = new HashMap<String, Object>();
+                updateTripDetails.put("itemName", edtItemName.getText().toString());
+                updateTripDetails.put("itemQuantity", Integer.parseInt(edtItemQuantity.getText().toString()));
+                myDbRef.updateChildren(updateTripDetails);
+                Toast.makeText(ctx, "Item Updated", Toast.LENGTH_SHORT).show();
+                edtItemName.setVisibility(View.GONE);
+                edtItemQuantity.setVisibility(View.GONE);
+                btnSave.setVisibility(View.GONE);
+                isEditMode = false;
+                updateListView();
+            }
+        });
+    }
+
 
     private void updateListView(){
         myAdapter.notifyDataSetChanged();
@@ -440,5 +397,27 @@ public class ItemListActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    ValueEventListener postListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            // Get Post object and use the values to update the UI
+            ItemData td = dataSnapshot.getValue(ItemData.class);
+            if(td != null){ // in case of delete issue persist
+                edtItemName.setText(td.getItemName());
+                edtItemQuantity.setText(td.getItemQuantity());
+            }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            // Getting Post failed, log a message
+            //Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+            // ...
+        }
+    };
+    public static HashMap<String, String> getItemMap(){
+        return hmap;
     }
 }

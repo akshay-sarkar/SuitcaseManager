@@ -27,6 +27,7 @@
         <activity android:name=".AddTripActivity" />
         <activity android:name=".BagListActivity"/>
         <activity android:name=".AirlineActivity" />
+        <activity android:name=".ItemListActivity"/>
         <!-- https://developer.android.com/reference/android/support/v4/content/FileProvider.html -->
         <provider
             android:name="android.support.v4.content.FileProvider"

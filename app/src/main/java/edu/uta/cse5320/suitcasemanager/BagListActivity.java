@@ -57,6 +57,11 @@ import edu.uta.cse5320.dao.BagHelper;
 import edu.uta.cse5320.util.ApplicationConstant;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+import static edu.uta.cse5320.util.ApplicationConstant.root_prop;
+import static edu.uta.cse5320.util.ApplicationConstant.root_trip_prop;
+import static edu.uta.cse5320.util.ApplicationConstant.trip_bag_prop;
+import static edu.uta.cse5320.util.ApplicationConstant.trip_val;
+
 public class BagListActivity extends AppCompatActivity {
 
     FirebaseUser user;
@@ -67,7 +72,7 @@ public class BagListActivity extends AppCompatActivity {
     private StorageReference mStorageRef;
     private ListView listBagTrip;
     BagAdapter myAdapter;
-    HashMap<String, String> hmap ;
+    public static HashMap<String, String> hmap ;
     //List<String> bagArray ;
     String TAG = "Suitcase Manager::BagScreen";
     int index = 1, i = 1;
@@ -77,7 +82,6 @@ public class BagListActivity extends AppCompatActivity {
     String mCurrentPhotoPath;
     Uri photoURI;
     String lastTouchedImageView;
-    private String tripID ,bagID;
     private BagHelper bagHelperDB;
     ArrayList<BagData> bagDataList;
 
@@ -130,7 +134,7 @@ public class BagListActivity extends AppCompatActivity {
 
         /* Getting Data from the data */
         Intent intent = getIntent();
-        tripID = intent.getStringExtra(TripListActivity.EXTRA_MESSAGE);
+        trip_val = intent.getStringExtra(TripListActivity.EXTRA_MESSAGE);
 
         bagHelperDB = new BagHelper(this);
         bagDataList = new ArrayList<>();
@@ -145,8 +149,9 @@ public class BagListActivity extends AppCompatActivity {
         user = mAuth.getCurrentUser();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        myDbRef = database.getReference("test").child(user.getUid()).child("Trips").child(tripID).child("Bags");
+        myDbRef = database.getReference(root_prop).child(user.getUid()).child(root_trip_prop).child(trip_val).child(trip_bag_prop);
         mStorageRef = FirebaseStorage.getInstance().getReference();
+        //hmap = new HashMap<String, String>();
 
         //to check if its bag details are empty and removing the progress dialog
         myDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -358,7 +363,7 @@ public class BagListActivity extends AppCompatActivity {
             progressDialog.show();
 
             FirebaseUser user = mAuth.getCurrentUser();
-            StorageReference filePath = mStorageRef.child("Photos").child(user.getUid()).child(tripID).child(photoURI.getLastPathSegment());
+            StorageReference filePath = mStorageRef.child("Photos").child(user.getUid()).child(trip_val).child(photoURI.getLastPathSegment());
 
             filePath.putFile(photoURI)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -374,7 +379,7 @@ public class BagListActivity extends AppCompatActivity {
                         imageURLRef.updateChildren(hopperUpdates);
 
                         progressDialog.dismiss();
-                        Toast.makeText(ctx, "Image Uploade Finished...", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ctx, "Image Upload Finished...", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -440,4 +445,8 @@ public class BagListActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+    public static HashMap<String, String> getTripMap(){
+        return hmap;
+    }
+
 }
