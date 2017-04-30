@@ -5,6 +5,15 @@
         android:title="Home"
         android:icon="@drawable/ic_home_black_48dp"/>
 
+    <item android:id="@+id/nav4"
+        android:title="Tip On"
+        android:icon="@drawable/ic_check_box_black_24dp"/>
+
+    <item android:id="@+id/nav5"
+        android:title="Tip Off"
+        android:icon="@drawable/ic_check_box_outline_blank_black_24dp"
+        android:visible="false"/>
+
     <item android:id="@+id/nav2"
         android:title="Airline Information"
         android:icon="@drawable/ic_flight_black_48dp"/>

@@ -3,6 +3,7 @@ package edu.uta.cse5320.suitcasemanager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -82,13 +83,20 @@ public class TripListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_list);
 
+        //shared prefernece for tip flag
+        final SharedPreferences pref = getApplicationContext().getSharedPreferences(ApplicationConstant.MySharedPrefName, MODE_PRIVATE);
+        final SharedPreferences.Editor editor = getSharedPreferences(ApplicationConstant.MySharedPrefName, MODE_PRIVATE).edit();
+
         // Left Menu / Navigational Layout
         mDrawerLayout = (DrawerLayout) findViewById(R.id.activity_trip_list);
         mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.menu_open, R.string.menu_close);
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        NavigationView nv = (NavigationView)findViewById(R.id.nv1);
+
+        final NavigationView nv = (NavigationView)findViewById(R.id.nv1);
+        //nv.getMenu().findItem(R.id.nav5).getActionView().setVisibility(View.GONE);
         nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
@@ -99,10 +107,21 @@ public class TripListActivity extends AppCompatActivity {
                     mDrawerLayout.closeDrawer(Gravity.LEFT);
                     Intent intent = new Intent(ctx, AirlineActivity.class);
                     startActivity(intent);
+                }else if(menuItem.getTitle().equals(ApplicationConstant.Tip_On)) {
+                    menuItem.setVisible(false);
+                    nv.getMenu().findItem(R.id.nav5).setVisible(true);
+                    editor.putBoolean(ApplicationConstant.tipflag, false);
+                    editor.apply();
+
+                    //ApplicationConstant.tipflag = false;
+                }else if(menuItem.getTitle().equals(ApplicationConstant.Tip_Off)) {
+                    menuItem.setVisible(false);
+                    nv.getMenu().findItem(R.id.nav4).setVisible(true);
+                    editor.putBoolean(ApplicationConstant.tipflag, true);
+                    editor.apply();
                 }else{
                     mDrawerLayout.closeDrawer(Gravity.LEFT);
                     System.out.println("--- Reache Here -- "+ menuItem.getTitle()); //Airline Information
-
                 }
                 return true;
             }
@@ -134,6 +153,12 @@ public class TripListActivity extends AppCompatActivity {
                 if (!dataSnapshot.exists()) {
                     System.out.println(TAG+ " onDataChange -> Empty" );
                     progressDialog.dismiss();
+                    //Tip Dialog Call
+                    boolean tipFlag = pref.getBoolean(ApplicationConstant.tipflag, true);
+                    if(tipFlag){
+                        TipDialogClass tipDialog = new TipDialogClass(TripListActivity.this);
+                        tipDialog.show();
+                    }
                 }
             }
             @Override
@@ -162,6 +187,13 @@ public class TripListActivity extends AppCompatActivity {
 
                 // Dimiss the dialog box
                 progressDialog.dismiss();
+
+                //Tip Dialog Call
+                boolean tipFlag = pref.getBoolean(ApplicationConstant.tipflag, true);
+                if(tipFlag){
+                    TipDialogClass tipDialog = new TipDialogClass(TripListActivity.this);
+                    tipDialog.show();
+                }
             }
 
             @Override

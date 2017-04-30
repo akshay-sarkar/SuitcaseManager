@@ -4,6 +4,7 @@ package edu.uta.cse5320.suitcasemanager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -116,6 +117,11 @@ public class ItemListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
+        //shared prefernece for tip flag
+        final SharedPreferences pref = getApplicationContext().getSharedPreferences(ApplicationConstant.MySharedPrefName, MODE_PRIVATE);
+        final SharedPreferences.Editor editor = getSharedPreferences(ApplicationConstant.MySharedPrefName, MODE_PRIVATE).edit();
+
+
         v1 = new View(this);
         edtItemName = (EditText) findViewById(R.id.editItemName1);
         edtItemQuantity = (EditText) findViewById(R.id.editItemQuantity1);
@@ -126,7 +132,7 @@ public class ItemListActivity extends AppCompatActivity {
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        NavigationView nv = (NavigationView)findViewById(R.id.nv2);
+        final NavigationView nv = (NavigationView)findViewById(R.id.nv2);
 
         nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -140,6 +146,18 @@ public class ItemListActivity extends AppCompatActivity {
                     startActivity(intent);
                 }else if(menuItem.getTitle().equals(ApplicationConstant.Home)) {
                     finish();
+                }else if(menuItem.getTitle().equals(ApplicationConstant.Tip_On)) {
+                    menuItem.setVisible(false);
+                    nv.getMenu().findItem(R.id.nav5).setVisible(true);
+                    editor.putBoolean(ApplicationConstant.tipflag, false);
+                    editor.apply();
+
+                    //ApplicationConstant.tipflag = false;
+                }else if(menuItem.getTitle().equals(ApplicationConstant.Tip_Off)) {
+                    menuItem.setVisible(false);
+                    nv.getMenu().findItem(R.id.nav4).setVisible(true);
+                    editor.putBoolean(ApplicationConstant.tipflag, true);
+                    editor.apply();
                 }else{
                     System.out.println("--- Reached Here -- "+ menuItem.getItemId());
                 }
