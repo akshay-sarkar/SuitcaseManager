@@ -2,10 +2,12 @@ package edu.uta.cse5320.dao;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,10 +57,13 @@ public class BagAdapter extends ArrayAdapter<BagData>{
 
         if (bagData != null) {
             convertView = mInflater.inflate(mViewResourceId, null);
-            TextView bagName = (TextView) convertView.findViewById(R.id.tripBagLabelName);
-            ImageView imageView1 = (ImageView) convertView.findViewById(R.id.imageViewBagPicture1);
-            ImageView imageView2 = (ImageView) convertView.findViewById(R.id.imageViewBagPicture2);
-            ImageView imageView3 = (ImageView) convertView.findViewById(R.id.imageViewBagPicture3);
+            final TextView bagName = (TextView) convertView.findViewById(R.id.tripBagLabelName);
+            final ImageView imageView1 = (ImageView) convertView.findViewById(R.id.imageViewBagPicture1);
+            final ImageView imageView2 = (ImageView) convertView.findViewById(R.id.imageViewBagPicture2);
+            final ImageView imageView3 = (ImageView) convertView.findViewById(R.id.imageViewBagPicture3);
+            final Button btnEdit = (Button) convertView.findViewById(R.id.btnBagEdit);
+            final Button btnDelete = (Button) convertView.findViewById(R.id.btnBagDelete);
+            final Button btnCancel = (Button) convertView.findViewById(R.id.btnBagCancel);
 
             if (bagName != null) {
                 bagName.setText(bagData.getBagName());
@@ -72,6 +77,21 @@ public class BagAdapter extends ArrayAdapter<BagData>{
                         hashMapBag = BagListActivity.getTripMap();
                         intent.putExtra(EXTRA_MESSAGE, hashMapBag.get(v.getTag().toString()));
                         context.startActivity(intent);
+                    }
+                });
+
+                bagName.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        getVisibility(bagName,imageView1,imageView2,imageView3,btnEdit,btnDelete,btnCancel,View.VISIBLE,View.GONE);
+                        return false;
+                    }
+                });
+
+                btnCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        getVisibility(bagName,imageView1,imageView2,imageView3,btnEdit,btnDelete,btnCancel,View.GONE,View.VISIBLE);
                     }
                 });
             }
@@ -123,10 +143,17 @@ public class BagAdapter extends ArrayAdapter<BagData>{
                         .error(R.drawable.ic_add_a_photo_black_48dp)
                         .into(imageView3);
             }
-
-
         }
-
         return convertView;
+    }
+
+    private void getVisibility(TextView bN, ImageView i1, ImageView i2, ImageView i3, Button bE,Button bD,Button bC,int s1,int s2){
+        bN.setVisibility(s1);
+        i1.setVisibility(s1);
+        i2.setVisibility(s1);
+        i3.setVisibility(s1);
+        bE.setVisibility(s2);
+        bD.setVisibility(s2);
+        bC.setVisibility(s2);
     }
 }
