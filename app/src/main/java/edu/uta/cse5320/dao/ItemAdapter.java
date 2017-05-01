@@ -80,6 +80,7 @@ public class ItemAdapter extends ArrayAdapter<ItemData>{
             final Button btnSave = (Button) convertView.findViewById(R.id.btnItemSave);
             final ImageView itemEdit = (ImageView) convertView.findViewById(R.id.itemEdit);
             final Button btnCancel = (Button) convertView.findViewById(R.id.btnItemCancel);
+            final Button btnSaveCancel = (Button) convertView.findViewById(R.id.btnItemSaveCancel);
 
             if (itemName != null && itemQuantity!=null) {
                 itemName.setText(itemData.getItemName());
@@ -89,25 +90,25 @@ public class ItemAdapter extends ArrayAdapter<ItemData>{
                     @Override
                     public boolean onLongClick(View v) {
                         getVisibilityDelete(itemName,itemQuantity,itemEdit,btnDelete,btnCancel,View.GONE,View.VISIBLE);
-                        return false;
+                        return true;
                     }
                 });
 
-                convertView.setOnTouchListener(new View.OnTouchListener() {
+                /*convertView.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
                         getVisibility(editItemName,editItemQuantity,itemName,itemQuantity,btnSave,itemEdit,View.GONE,View.VISIBLE);
                         getVisibilityDelete(itemName,itemQuantity,itemEdit,btnDelete,btnCancel,View.VISIBLE,View.GONE);
-                        return false;
+                        return true;
                     }
-                });
+                });*/
 
                 itemEdit.setTag(itemData.getItemName());
                 itemEdit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         //getVisibilityDelete(itemName,itemQuantity,itemEdit,btnDelete,View.VISIBLE,View.GONE);
-                        getVisibility(editItemName,editItemQuantity,itemName,itemQuantity,btnSave,itemEdit,View.VISIBLE,View.GONE);
+                        getVisibility(editItemName,editItemQuantity,itemName,itemQuantity,btnSave,btnSaveCancel,itemEdit,View.VISIBLE,View.GONE);
                         editItemName.setText(itemName.getText().toString());
                         editItemQuantity.setText(itemQuantity.getText().toString());
                     }
@@ -134,6 +135,13 @@ public class ItemAdapter extends ArrayAdapter<ItemData>{
                     }
                 });
 
+                btnSaveCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        getVisibility(editItemName,editItemQuantity,itemName,itemQuantity,btnSave,btnSaveCancel,itemEdit,View.GONE,View.VISIBLE);
+                    }
+                });
+
 
 
                 /*itemName.setOnClickListener(new View.OnClickListener() {
@@ -157,7 +165,7 @@ public class ItemAdapter extends ArrayAdapter<ItemData>{
                             ItemListActivity.myDbRef.child(key).updateChildren(updateTripDetails);
                         }
                         Toast.makeText(context, "Item Updated", Toast.LENGTH_SHORT).show();
-                        getVisibility(editItemName,editItemQuantity,itemName,itemQuantity,btnSave,itemEdit,View.GONE,View.VISIBLE);
+                        getVisibility(editItemName,editItemQuantity,itemName,itemQuantity,btnSave,btnSaveCancel,itemEdit,View.GONE,View.VISIBLE);
                     }
                 });
             }
@@ -167,14 +175,15 @@ public class ItemAdapter extends ArrayAdapter<ItemData>{
        return convertView;
    }
 
-   public void getVisibility(EditText eN, EditText eQ, TextView iN, TextView iQ, Button bS, ImageView iE, int s1, int s2){
-       eN.setVisibility(s1);
-       eQ.setVisibility(s1);
-       bS.setVisibility(s1);
-       iN.setVisibility(s2);
-       iQ.setVisibility(s2);
-       iE.setVisibility(s2);
-   }
+    public void getVisibility(EditText eN, EditText eQ, TextView iN, TextView iQ, Button bS,Button bSc, ImageView iE, int s1, int s2){
+        eN.setVisibility(s1);
+        eQ.setVisibility(s1);
+        bS.setVisibility(s1);
+        bSc.setVisibility(s1);
+        iN.setVisibility(s2);
+        iQ.setVisibility(s2);
+        iE.setVisibility(s2);
+    }
 
    public void getVisibilityDelete(TextView iN, TextView iQ, ImageView iE, Button bD,Button bC, int s1, int s2){
        iN.setVisibility(s1);
@@ -184,5 +193,4 @@ public class ItemAdapter extends ArrayAdapter<ItemData>{
        bC.setVisibility(s2);
 
    }
-
 }

@@ -52,10 +52,20 @@
         android:layout_height="wrap_content"
         android:id="@+id/btnItemSave"
         android:layout_below="@+id/editItemQuantity"
-        android:layout_alignParentEnd="true"
+        android:layout_toStartOf="@+id/btnItemSaveCancel"
         android:layout_marginEnd="10dp"
         android:visibility="gone"
         android:text="Save" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnItemSaveCancel"
+        android:layout_below="@+id/editItemQuantity"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"
+        android:visibility="gone"
+        android:text="Cancel" />
 
     <Button
         android:id="@+id/btnItemDelete"

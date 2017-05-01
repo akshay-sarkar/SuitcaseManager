@@ -69,7 +69,7 @@ public class BagListActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private Context ctx;
-    private DatabaseReference myDbRef, imageURLRef;
+    public static DatabaseReference myDbRef, imageURLRef;
     private StorageReference mStorageRef;
     private ListView listBagTrip;
     BagAdapter myAdapter;

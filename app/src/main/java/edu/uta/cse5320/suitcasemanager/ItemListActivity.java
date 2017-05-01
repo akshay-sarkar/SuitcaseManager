@@ -87,10 +87,10 @@ public class ItemListActivity extends AppCompatActivity {
     private EditText edtItemName, edtItemQuantity;
     private View v1;
     private Button btnSave;
-    ItemAdapter myAdapter;
+    static ItemAdapter myAdapter;
     private String message;
-    private static HashMap<String, String> hmap ;
-    private ItemData itemDataVal;
+    private static HashMap<String, String> hmap;
+    private static ItemData itemDataVal;
     //List<String> itemArray ;
     String TAG = "Suitcase Manager::ItemScreen";
     int index = 1, i = 1;
@@ -101,7 +101,7 @@ public class ItemListActivity extends AppCompatActivity {
     Uri photoURI;
     String lastTouchedImageView;
     private ItemHelper itemHelperDB;
-    ArrayList<ItemData> itemDataList;
+    static ArrayList<ItemData> itemDataList;
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
@@ -247,7 +247,7 @@ public class ItemListActivity extends AppCompatActivity {
                                 break;
                             }
                         }
-                        itemDataList.add( itemDat);
+                        itemDataList.add(itemDat);
                         myAdapter.notifyDataSetChanged();
                         updateListView();
                     }

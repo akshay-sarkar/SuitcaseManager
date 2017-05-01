@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +19,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import edu.uta.cse5320.suitcasemanager.BagListActivity;
 import edu.uta.cse5320.suitcasemanager.ItemListActivity;
@@ -64,6 +66,9 @@ public class BagAdapter extends ArrayAdapter<BagData>{
             final Button btnEdit = (Button) convertView.findViewById(R.id.btnBagEdit);
             final Button btnDelete = (Button) convertView.findViewById(R.id.btnBagDelete);
             final Button btnCancel = (Button) convertView.findViewById(R.id.btnBagCancel);
+            final Button btnSave = (Button) convertView.findViewById(R.id.btnBagSave);
+            final Button btnSaveCancel = (Button) convertView.findViewById(R.id.btnBagSaveCancel);
+            final EditText editBagName = (EditText) convertView.findViewById(R.id.editBagName);
 
             if (bagName != null) {
                 bagName.setText(bagData.getBagName());
@@ -80,18 +85,65 @@ public class BagAdapter extends ArrayAdapter<BagData>{
                     }
                 });
 
+                btnSaveCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        getVisibilityEdit(bagName,imageView1,imageView2,imageView3,btnEdit,btnDelete,btnCancel,editBagName,btnSave,btnSaveCancel,View.VISIBLE,View.GONE,true);
+
+                    }
+                });
+
+                btnEdit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        getVisibilityEdit(bagName,imageView1,imageView2,imageView3,btnEdit,btnDelete,btnCancel,editBagName,btnSave,btnSaveCancel,View.GONE,View.VISIBLE,false);
+                        editBagName.setText(bagName.getText().toString());
+                    }
+                });
+
+                btnSave.setTag(bagData.getBagName());
+                btnSave.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        hashMapBag = BagListActivity.getTripMap();
+                        String key = hashMapBag.get(v.getTag().toString());
+                        if(!key.isEmpty()){
+                            Map<String, Object> updateBagDetails = new HashMap<String, Object>();
+                            updateBagDetails.put("bagName", editBagName.getText().toString());
+                            BagListActivity.myDbRef.child(key).updateChildren(updateBagDetails);
+                        }
+                        Toast.makeText(context, "Item Updated", Toast.LENGTH_SHORT).show();
+                        getVisibilityEdit(bagName,imageView1,imageView2,imageView3,btnEdit,btnDelete,btnCancel,editBagName,btnSave,btnSaveCancel,View.VISIBLE,View.GONE,true);
+                    }
+                });
+
+                btnDelete.setTag(bagData.getBagName());
+                btnDelete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(context, "Deleted  - " + v.getTag().toString(), Toast.LENGTH_SHORT).show();
+                        hashMapBag = BagListActivity.getTripMap();
+                        String key = hashMapBag.get(v.getTag().toString());
+                        if (!key.isEmpty()) {
+                            BagListActivity.myDbRef.child(key).setValue(null);
+                            getVisibility(bagName, imageView1, imageView2, imageView3, btnEdit, btnDelete, btnCancel, View.GONE, View.VISIBLE);
+                        }
+                    }
+                });
+
+
                 bagName.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        getVisibility(bagName,imageView1,imageView2,imageView3,btnEdit,btnDelete,btnCancel,View.VISIBLE,View.GONE);
-                        return false;
+                        getVisibility(bagName,imageView1,imageView2,imageView3,btnEdit,btnDelete,btnCancel,View.GONE,View.VISIBLE);
+                        return true;
                     }
                 });
 
                 btnCancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        getVisibility(bagName,imageView1,imageView2,imageView3,btnEdit,btnDelete,btnCancel,View.GONE,View.VISIBLE);
+                        getVisibility(bagName,imageView1,imageView2,imageView3,btnEdit,btnDelete,btnCancel,View.VISIBLE,View.GONE);
                     }
                 });
             }
@@ -156,4 +208,22 @@ public class BagAdapter extends ArrayAdapter<BagData>{
         bD.setVisibility(s2);
         bC.setVisibility(s2);
     }
+
+    private void getVisibilityEdit(TextView bN, ImageView i1, ImageView i2, ImageView i3, Button bE, Button bD, Button bC, EditText eN, Button sB, Button sBc, int s1, int s2, boolean ch){
+        if(ch){
+            bN.setVisibility(s1);
+            i1.setVisibility(s1);
+            i2.setVisibility(s1);
+            i3.setVisibility(s1);
+        }else{
+            bE.setVisibility(s1);
+            bD.setVisibility(s1);
+            bC.setVisibility(s1);
+
+        }
+        eN.setVisibility(s2);
+        sB.setVisibility(s2);
+        sBc.setVisibility(s2);
+    }
+
 }
