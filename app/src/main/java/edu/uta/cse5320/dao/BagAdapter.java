@@ -80,7 +80,7 @@ public class BagAdapter extends ArrayAdapter<BagData>{
                     @Override
                     public void onClick(View v) {
                         //int position = listViewTrip.getPositionForView((View) v.getParent());
-                        Toast.makeText(context, "Clicked on  - "+ v.getTag().toString(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(context, "Clicked on  - "+ v.getTag().toString(), Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(context, ItemListActivity.class);
                         hashMapBag = BagListActivity.getTripMap();
                         intent.putExtra(EXTRA_MESSAGE, hashMapBag.get(v.getTag().toString()));
@@ -115,7 +115,7 @@ public class BagAdapter extends ArrayAdapter<BagData>{
                             updateBagDetails.put("bagName", editBagName.getText().toString());
                             BagListActivity.myDbRef.child(key).updateChildren(updateBagDetails);
                         }
-                        Toast.makeText(context, "Item Updated", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Updated Bag - "+v.getTag().toString(), Toast.LENGTH_SHORT).show();
                         getVisibilityEdit(bagName,imageView1,imageView2,imageView3,btnEdit,btnDelete,btnCancel,editBagName,btnSave,btnSaveCancel,View.VISIBLE,View.GONE,true);
                     }
                 });
@@ -124,7 +124,7 @@ public class BagAdapter extends ArrayAdapter<BagData>{
                 btnDelete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(context, "Deleted  - " + v.getTag().toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Deleted  Bag - " + v.getTag().toString(), Toast.LENGTH_SHORT).show();
                         hashMapBag = BagListActivity.getTripMap();
                         String key = hashMapBag.get(v.getTag().toString());
                         if (!key.isEmpty()) {
