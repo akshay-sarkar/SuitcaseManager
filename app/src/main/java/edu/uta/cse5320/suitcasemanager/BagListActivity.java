@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,6 +18,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,8 +46,14 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -74,6 +83,7 @@ public class BagListActivity extends AppCompatActivity {
     private ListView listBagTrip;
     BagAdapter myAdapter;
     public static HashMap<String, String> hmap ;
+    File photoFile;
     //List<String> bagArray ;
     String TAG = "Suitcase Manager::BagScreen";
     int index = 1, i = 1;
@@ -340,7 +350,7 @@ public class BagListActivity extends AppCompatActivity {
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             // Create the File where the photo should go
-            File photoFile = null;
+            photoFile = null;
             try {
                 photoFile = createImageFile();
             } catch (IOException ex) {
@@ -358,6 +368,7 @@ public class BagListActivity extends AppCompatActivity {
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        //OutputStream outputStream = null;
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
@@ -367,6 +378,13 @@ public class BagListActivity extends AppCompatActivity {
         );
 
         // Save a file: path for use with ACTION_VIEW intents
+        /*Bitmap tempImage = BitmapFactory.decodeFile(image.getName());
+        outputStream = new FileOutputStream(image);
+        tempImage.compress(Bitmap.CompressFormat.JPEG,20,outputStream);
+        outputStream.flush();
+        outputStream.close();*/
+        //Bitmap lqImage = Bitmap.createScaledBitmap(tempImage,512,512,false);
+
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
     }
@@ -375,14 +393,49 @@ public class BagListActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
 
+        /*if (requestCode == CAMERA_REQUEST_CODE) {
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+        }*/
+
+
+
         if(requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK){
+
+            int targetW = 400;
+            int targetH = 500;
+
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            bmOptions.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(photoFile.getAbsolutePath(),bmOptions);
+            int photoW = bmOptions.outWidth;
+            int photoH = bmOptions.outHeight;
+
+            int scaleFactor = Math.min(photoW/targetW,photoH/targetH);
+            bmOptions.inJustDecodeBounds = false;
+            bmOptions.inSampleSize = scaleFactor;
+            bmOptions.inPurgeable = true;
+
+            Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath(),bmOptions);
+
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+
+            byte[] byteFormat = stream.toByteArray();
+            //String encodedImage = Base64.encodeToString(byteFormat, Base64.DEFAULT);
+
             progressDialog.setMessage("Uploading Image..");
             progressDialog.show();
+            //BitmapFactory.Options options = new BitmapFactory.Options();
+            //options.inSampleSize = 8;
+            //Bitmap bitmap = BitmapFactory.decodeFile(photoURI.getPath());
+            //Uri imageURI = data.getData();
+            //Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),imageURI);
 
+            //Bitmap bmp = ImagePicker.getImageFromResult(this,resultCode,data);
             FirebaseUser user = mAuth.getCurrentUser();
             StorageReference filePath = mStorageRef.child("Photos").child(user.getUid()).child(trip_val).child(photoURI.getLastPathSegment());
 
-            filePath.putFile(photoURI)
+            filePath.putBytes(byteFormat)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -392,9 +445,7 @@ public class BagListActivity extends AppCompatActivity {
                         //Updating the URL in Database
                         Map<String, Object> hopperUpdates = new HashMap<String, Object>();
                         hopperUpdates.put(lastTouchedImageView, downloadUrl.toString());
-
                         imageURLRef.updateChildren(hopperUpdates);
-
                         progressDialog.dismiss();
                         Toast.makeText(ctx, "Image Upload Finished...", Toast.LENGTH_SHORT).show();
                     }

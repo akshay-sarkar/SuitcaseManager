@@ -1,8 +1,11 @@
 package edu.uta.cse5320.dao;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.Image;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -148,12 +151,22 @@ public class BagAdapter extends ArrayAdapter<BagData>{
                 });
             }
             if(imageView1 != null && bagData.getImageUrl1()!=null && !bagData.getImageUrl1().isEmpty()){
+
+
                 Picasso.with(context)
                         .load(bagData.getImageUrl1())
                         .fit().centerCrop()
                         .placeholder(R.drawable.ic_add_a_photo_black_48dp)
                         .error(R.drawable.ic_add_a_photo_black_48dp)
                         .into(imageView1);
+
+                imageView1.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                            showImage(bagData.getImageUrl1());
+                        return true;
+                    }
+                });
             }
 //            if(imageView1 != null ){
 //                final String imageUrl1 = bagData.getImageUrl1();
@@ -186,6 +199,14 @@ public class BagAdapter extends ArrayAdapter<BagData>{
                         .placeholder(R.drawable.ic_add_a_photo_black_48dp)
                         .error(R.drawable.ic_add_a_photo_black_48dp)
                         .into(imageView2);
+
+                imageView2.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        showImage(bagData.getImageUrl2());
+                        return true;
+                    }
+                });
             }
             if(imageView3 != null && bagData.getImageUrl3()!=null && !bagData.getImageUrl3().isEmpty()){
                 Picasso.with(context)
@@ -194,9 +215,41 @@ public class BagAdapter extends ArrayAdapter<BagData>{
                         .placeholder(R.drawable.ic_add_a_photo_black_48dp)
                         .error(R.drawable.ic_add_a_photo_black_48dp)
                         .into(imageView3);
+
+                imageView3.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        showImage(bagData.getImageUrl3());
+                        return true;
+                    }
+                });
             }
         }
         return convertView;
+    }
+
+    private void showImage(String imageURI){
+        ImageView image = new ImageView(context);
+        Picasso.with(context)
+                .load(imageURI)
+                .resize(400,600)
+                .placeholder(R.drawable.ic_add_a_photo_black_48dp)
+                .error(R.drawable.ic_add_a_photo_black_48dp)
+                .into(image);
+        //
+        // image.setImageResource(R.drawable.YOUR_IMAGE_ID);
+
+        AlertDialog.Builder builder =
+                new AlertDialog.Builder(context).
+                        setMessage("Zoomed-In Image").
+                        setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).
+                        setView(image);
+        builder.create().show();
     }
 
     private void getVisibility(TextView bN, ImageView i1, ImageView i2, ImageView i3, Button bE,Button bD,Button bC,int s1,int s2){
