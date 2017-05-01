@@ -302,15 +302,20 @@ public class AddTripActivity extends AppCompatActivity{
                 NetworkInfo info = (NetworkInfo) extras.getParcelable("networkInfo");
                 NetworkInfo.State state = info.getState();
                 Log.d("TEST Internet", info.toString() + " " + state.toString());
+                final AlertDialog alertDialog = new AlertDialog.Builder(AddTripActivity.this).create();
 
                 if (state != NetworkInfo.State.CONNECTED) {
-                    final AlertDialog alertDialog = new AlertDialog.Builder(AddTripActivity.this).create();
                     alertDialog.setTitle("Network Problem");
                     alertDialog.setCancelable(false);
                     alertDialog.setMessage("No Network Available. Check Internet Connection");
                     alertDialog.setIcon(R.mipmap.ic_error);
                     alertDialog.show();
                 }
+                else {
+                    if(alertDialog!=null )
+                    alertDialog.dismiss();
+                }
+
 
             }
         };

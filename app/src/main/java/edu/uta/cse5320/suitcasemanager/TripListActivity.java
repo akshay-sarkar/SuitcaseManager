@@ -72,6 +72,7 @@ public class TripListActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ProgressDialog progressDialog;
     private ActionBarDrawerToggle mToggle;
+    AlertDialog alertDialog= null;
 
     @Override
     public void onBackPressed() {
@@ -366,8 +367,9 @@ public class TripListActivity extends AppCompatActivity {
                 NetworkInfo.State state = info.getState();
                 Log.d("TEST Internet", info.toString() + " " + state.toString());
 
+
                 if (state != NetworkInfo.State.CONNECTED) {
-                    final AlertDialog alertDialog = new AlertDialog.Builder(TripListActivity.this).create();
+                    alertDialog = new AlertDialog.Builder(TripListActivity.this).create();
                     alertDialog.setTitle("Network Problem");
                     alertDialog.setCancelable(false);
                     alertDialog.setMessage("No Network Available. Check Internet Connection");
@@ -375,6 +377,10 @@ public class TripListActivity extends AppCompatActivity {
                     alertDialog.show();
                 }
 
+                else {
+                    if(alertDialog!=null )
+                    alertDialog.dismiss();
+                }
             }
         };
 

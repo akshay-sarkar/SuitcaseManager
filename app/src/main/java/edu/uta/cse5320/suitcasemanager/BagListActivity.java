@@ -533,9 +533,9 @@ public class BagListActivity extends AppCompatActivity {
                 NetworkInfo info = (NetworkInfo) extras.getParcelable("networkInfo");
                 NetworkInfo.State state = info.getState();
                 Log.d("TEST Internet", info.toString() + " " + state.toString());
+                final AlertDialog alertDialog = new AlertDialog.Builder(BagListActivity.this).create();
 
                 if (state != NetworkInfo.State.CONNECTED) {
-                    final AlertDialog alertDialog = new AlertDialog.Builder(BagListActivity.this).create();
                     alertDialog.setTitle("Network Problem");
                     alertDialog.setCancelable(false);
                     alertDialog.setMessage("No Network Available. Check Internet Connection");
@@ -543,6 +543,10 @@ public class BagListActivity extends AppCompatActivity {
                     alertDialog.show();
                 }
 
+                else {
+                    if(alertDialog!=null )
+                    alertDialog.dismiss();
+                }
             }
         };
 
