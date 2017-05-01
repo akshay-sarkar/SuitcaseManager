@@ -170,11 +170,6 @@ public class TripListActivity extends AppCompatActivity {
                 boolean connected = snapshot.getValue(Boolean.class);
                 if (!connected) {
                     progressDialog.dismiss();
-                    AlertDialog alertDialog = new AlertDialog.Builder(TripListActivity.this).create();
-                    alertDialog.setTitle("Network Problem");
-                    alertDialog.setMessage("No Network Available. Check Internet Connection");
-                    alertDialog.setIcon(R.mipmap.ic_error);
-                    alertDialog.show();
                 }
             }
 
@@ -372,21 +367,12 @@ public class TripListActivity extends AppCompatActivity {
                 Log.d("TEST Internet", info.toString() + " " + state.toString());
 
                 if (state != NetworkInfo.State.CONNECTED) {
-                    final AlertDialog.Builder alertDialog = new AlertDialog.Builder(TripListActivity.this);
+                    final AlertDialog alertDialog = new AlertDialog.Builder(TripListActivity.this).create();
                     alertDialog.setTitle("Network Problem");
                     alertDialog.setCancelable(false);
                     alertDialog.setMessage("No Network Available. Check Internet Connection");
                     alertDialog.setIcon(R.mipmap.ic_error);
-                    alertDialog.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-                        public void onClick(DialogInterface dialog, int id) {
-                            mAuth.signOut();
-                            Auth.GoogleSignInApi.signOut(mGoogleApiClient);
-                            Intent loginScreenIntent = new Intent(TripListActivity.this, MainActivity.class);
-                            loginScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(loginScreenIntent);
-                        }
-                    });
-                    alertDialog.create().show();
+                    alertDialog.show();
                 }
 
             }
