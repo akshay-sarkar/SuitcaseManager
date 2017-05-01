@@ -1,9 +1,15 @@
 package edu.uta.cse5320.suitcasemanager;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -56,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mGoogleSignInButton = (SignInButton) findViewById(R.id.sign_in_button);
 
+        checkInternet();
+
         // [START config_signin]
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -102,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+
     }
 
     @Override
@@ -203,5 +212,38 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    private void checkInternet(){
+        BroadcastReceiver br = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Bundle extras = intent.getExtras();
+                NetworkInfo info = (NetworkInfo) extras.getParcelable("networkInfo");
+                NetworkInfo.State state = info.getState();
+                Log.d("TEST Internet", info.toString() + " " + state.toString());
+
+                if (state != NetworkInfo.State.CONNECTED) {
+                    final AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+                    alertDialog.setTitle("Network Problem");
+                    alertDialog.setCancelable(false);
+                    alertDialog.setMessage("No Network Available. Check Internet Connection");
+                    alertDialog.setIcon(R.mipmap.ic_error);
+                    alertDialog.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+                        public void onClick(DialogInterface dialog, int id) {
+                            Intent loginScreenIntent = new Intent(MainActivity.this, MainActivity.class);
+                            loginScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(loginScreenIntent);
+                        }
+                    });
+                    alertDialog.create().show();
+                }
+
+            }
+        };
+
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver((BroadcastReceiver) br, intentFilter);
     }
 }

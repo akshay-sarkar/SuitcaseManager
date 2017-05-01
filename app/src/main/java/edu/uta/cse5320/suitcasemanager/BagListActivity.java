@@ -1,12 +1,17 @@
 package edu.uta.cse5320.suitcasemanager;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -17,8 +22,10 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.content.FileProvider;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -154,6 +161,7 @@ public class BagListActivity extends AppCompatActivity {
             }
         });
 
+        checkInternet();
         //Progress for operations
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Retrieving Your Data..");
@@ -515,6 +523,41 @@ public class BagListActivity extends AppCompatActivity {
     }
     public static HashMap<String, String> getTripMap(){
         return hmap;
+    }
+
+    private void checkInternet(){
+        BroadcastReceiver br = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Bundle extras = intent.getExtras();
+                NetworkInfo info = (NetworkInfo) extras.getParcelable("networkInfo");
+                NetworkInfo.State state = info.getState();
+                Log.d("TEST Internet", info.toString() + " " + state.toString());
+
+                if (state != NetworkInfo.State.CONNECTED) {
+                    final AlertDialog.Builder alertDialog = new AlertDialog.Builder(BagListActivity.this);
+                    alertDialog.setTitle("Network Problem");
+                    alertDialog.setCancelable(false);
+                    alertDialog.setMessage("No Network Available. Check Internet Connection");
+                    alertDialog.setIcon(R.mipmap.ic_error);
+                    alertDialog.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+                        public void onClick(DialogInterface dialog, int id) {
+                            mAuth.signOut();
+                            Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                            Intent loginScreenIntent = new Intent(BagListActivity.this, MainActivity.class);
+                            loginScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(loginScreenIntent);
+                        }
+                    });
+                    alertDialog.create().show();
+                }
+
+            }
+        };
+
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver((BroadcastReceiver) br, intentFilter);
     }
 
 }

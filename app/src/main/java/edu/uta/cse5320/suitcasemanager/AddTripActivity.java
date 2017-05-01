@@ -4,11 +4,18 @@ package edu.uta.cse5320.suitcasemanager;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -96,6 +103,7 @@ public class AddTripActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_trip);
 
+        checkInternet();
         editTextTripName = (EditText) findViewById(R.id.editTextTripName);
         //editTextTripAirline = (EditText) findViewById(R.id.editTextTripAirline);
         spinnerTripAirline = (Spinner) findViewById(R.id.spinnerTripAirline);
@@ -285,5 +293,40 @@ public class AddTripActivity extends AppCompatActivity{
             // ...
         }
     };
+
+    private void checkInternet(){
+        BroadcastReceiver br = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Bundle extras = intent.getExtras();
+                NetworkInfo info = (NetworkInfo) extras.getParcelable("networkInfo");
+                NetworkInfo.State state = info.getState();
+                Log.d("TEST Internet", info.toString() + " " + state.toString());
+
+                if (state != NetworkInfo.State.CONNECTED) {
+                    final AlertDialog.Builder alertDialog = new AlertDialog.Builder(AddTripActivity.this);
+                    alertDialog.setTitle("Network Problem");
+                    alertDialog.setCancelable(false);
+                    alertDialog.setMessage("No Network Available. Check Internet Connection");
+                    alertDialog.setIcon(R.mipmap.ic_error);
+                    alertDialog.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+                        public void onClick(DialogInterface dialog, int id) {
+                            mAuth.signOut();
+                            Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                            Intent loginScreenIntent = new Intent(AddTripActivity.this, MainActivity.class);
+                            loginScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(loginScreenIntent);
+                        }
+                    });
+                    alertDialog.create().show();
+                }
+
+            }
+        };
+
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver((BroadcastReceiver) br, intentFilter);
+    }
 
 }
