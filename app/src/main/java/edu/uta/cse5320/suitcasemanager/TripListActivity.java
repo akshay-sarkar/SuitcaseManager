@@ -10,6 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -83,6 +84,7 @@ public class TripListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_list);
 
+
         //shared prefernece for tip flag
         final SharedPreferences pref = getApplicationContext().getSharedPreferences(ApplicationConstant.MySharedPrefName, MODE_PRIVATE);
         final SharedPreferences.Editor editor = getSharedPreferences(ApplicationConstant.MySharedPrefName, MODE_PRIVATE).edit();
@@ -132,6 +134,7 @@ public class TripListActivity extends AppCompatActivity {
         progressDialog.setMessage("Retrieving Your Data..");
         progressDialog.show();
 
+
         //mLogoutBtn = (Button) findViewById(R.id.logoutBtn);
         mAuth = FirebaseAuth.getInstance();
         ctx = getApplicationContext();
@@ -141,7 +144,30 @@ public class TripListActivity extends AppCompatActivity {
         tripDataList = new ArrayList<>();
         tripHelperDB = new TripHelper(this);
 
+
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
+        //checking firebase connection
+        myDbRef = database.getReference(".info/connected");
+        myDbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                boolean connected = snapshot.getValue(Boolean.class);
+                if (!connected) {
+                    progressDialog.dismiss();
+                    AlertDialog alertDialog = new AlertDialog.Builder(TripListActivity.this).create();
+                    alertDialog.setTitle("Network Problem");
+                    alertDialog.setMessage("No Network Available. Check Internet Connection");
+                    alertDialog.setIcon(R.mipmap.ic_error);
+                    alertDialog.show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+            }
+        });
+
         myDbRef = database.getReference(ApplicationConstant.root_prop).child(root_val).child(ApplicationConstant.root_trip_prop);
         hmap = new HashMap<String, String>();
         //dbUpdates(myDbRef);
@@ -151,7 +177,7 @@ public class TripListActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()) {
-                    System.out.println(TAG+ " onDataChange -> Empty" );
+                    Toast.makeText(ctx, "No Trip Exist!!", Toast.LENGTH_LONG).show();
                     progressDialog.dismiss();
                     //Tip Dialog Call
                     boolean tipFlag = pref.getBoolean(ApplicationConstant.tipflag, true);
@@ -163,7 +189,7 @@ public class TripListActivity extends AppCompatActivity {
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                progressDialog.dismiss();
             }
         });
 

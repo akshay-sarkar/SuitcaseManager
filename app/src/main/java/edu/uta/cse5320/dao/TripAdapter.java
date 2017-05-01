@@ -87,7 +87,7 @@ public class TripAdapter extends ArrayAdapter<TripData> {
                 @Override
                 public void onClick(View v) {
                     //int position = listViewTrip.getPositionForView((View) v.getParent());
-                    Toast.makeText(context, "Clicked on  - "+ v.getTag().toString(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, "Clicked on  - "+ v.getTag().toString(), Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(context, BagListActivity.class);
                     hashMapTrip = TripListActivity.getTripMap();
                     intent.putExtra(EXTRA_MESSAGE, hashMapTrip.get(v.getTag().toString()));
@@ -100,7 +100,7 @@ public class TripAdapter extends ArrayAdapter<TripData> {
                 @Override
                 public void onClick(View v) {
                     hashMapTrip = TripListActivity.getTripMap();
-                    Toast.makeText(context, "Airline Information For the Trip : "+ v.getTag().toString(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, "Airline Information For the Trip : "+ v.getTag().toString(), Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(context, AirlineActivity.class);
                     intent.putExtra(EXTRA_MESSAGE, hashMapTrip.get(v.getTag().toString()));
                     intent.putExtra("airlineName", tripData.getTripAirlineName());
@@ -113,7 +113,7 @@ public class TripAdapter extends ArrayAdapter<TripData> {
             imageViewEdit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(context, "Clicked on  - "+ v.getTag().toString(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, "Clicked on  - "+ v.getTag().toString(), Toast.LENGTH_SHORT).show();
                     hashMapTrip = TripListActivity.getTripMap();
                     Intent intent = new Intent(context, AddTripActivity.class);
                     intent.putExtra(EXTRA_MESSAGE, hashMapTrip.get(v.getTag().toString()));
@@ -125,7 +125,7 @@ public class TripAdapter extends ArrayAdapter<TripData> {
             imageViewDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(context, "Deleted  - "+ v.getTag().toString(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, "Deleted  - "+ v.getTag().toString(), Toast.LENGTH_SHORT).show();
                     hashMapTrip = TripListActivity.getTripMap();
                     String key = hashMapTrip.get(v.getTag().toString());
                     if(!key.isEmpty()){
