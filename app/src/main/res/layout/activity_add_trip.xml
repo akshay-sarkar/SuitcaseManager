@@ -65,7 +65,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="17dp"
                 android:editable="false"
-                android:ems="8"
+                android:ems="10"
                 android:hint="Trip Name"
                 android:inputType="textPersonName" />
 
@@ -173,8 +173,8 @@
                 android:inputType="textMultiLine"
                 android:layout_below="@+id/textViewTicketDetails"
                 android:layout_marginTop="13dp"
-                android:layout_alignEnd="@+id/spinnerTripAirline"
-                android:layout_alignStart="@+id/textViewTicketDetails" />
+                android:layout_alignStart="@+id/textViewTicketDetails"
+                android:layout_alignEnd="@+id/btnSetEndDate" />
 
             <Button
                 android:id="@+id/saveTripData"

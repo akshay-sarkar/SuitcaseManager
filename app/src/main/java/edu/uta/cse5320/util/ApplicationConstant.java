@@ -25,6 +25,9 @@ public class ApplicationConstant {
     public static final String Home = "Home";
     public static final String Tip_On = "Tip On";
     public static final String Tip_Off = "Tip Off";
+
+    //Tip related constants
+    public static boolean firstLaunch = true;
     public static final String tipflag = "tipflag";
     public static final String MySharedPrefName = "SuitcaseManagerPreference";
     public static final String[] tipheading = { "Make a packing list, or just use ours",

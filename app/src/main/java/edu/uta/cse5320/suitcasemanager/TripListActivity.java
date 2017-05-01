@@ -134,6 +134,14 @@ public class TripListActivity extends AppCompatActivity {
         progressDialog.setMessage("Retrieving Your Data..");
         progressDialog.show();
 
+        //Tip Dialog Call
+        boolean tipFlag = pref.getBoolean(ApplicationConstant.tipflag, true);
+        if(tipFlag && ApplicationConstant.firstLaunch){
+            TipDialogClass tipDialog = new TipDialogClass(TripListActivity.this);
+            tipDialog.show();
+            ApplicationConstant.firstLaunch = false;
+        }
+
 
         //mLogoutBtn = (Button) findViewById(R.id.logoutBtn);
         mAuth = FirebaseAuth.getInstance();
@@ -179,12 +187,6 @@ public class TripListActivity extends AppCompatActivity {
                 if (!dataSnapshot.exists()) {
                     Toast.makeText(ctx, "No Trip Exist!!", Toast.LENGTH_LONG).show();
                     progressDialog.dismiss();
-                    //Tip Dialog Call
-                    boolean tipFlag = pref.getBoolean(ApplicationConstant.tipflag, true);
-                    if(tipFlag){
-                        TipDialogClass tipDialog = new TipDialogClass(TripListActivity.this);
-                        tipDialog.show();
-                    }
                 }
             }
             @Override
@@ -213,13 +215,6 @@ public class TripListActivity extends AppCompatActivity {
 
                 // Dimiss the dialog box
                 progressDialog.dismiss();
-
-                //Tip Dialog Call
-                boolean tipFlag = pref.getBoolean(ApplicationConstant.tipflag, true);
-                if(tipFlag){
-                    TipDialogClass tipDialog = new TipDialogClass(TripListActivity.this);
-                    tipDialog.show();
-                }
             }
 
             @Override
