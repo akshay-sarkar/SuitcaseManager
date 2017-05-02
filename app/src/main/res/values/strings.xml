@@ -13,8 +13,9 @@
         <item>Air India</item>
         <item>Air France</item>
         <item>British Airways</item>
-        <item>American Airline</item>
+        <item>American Airlines</item>
         <item>Tiger Airline</item>
+        <item>United Airline</item>
     </string-array>
 
 </resources>
