@@ -220,18 +220,21 @@ public class ItemListActivity extends AppCompatActivity {
                 ++index;
                 ItemData itemData = dataSnapshot.getValue(ItemData.class);
                 //Key - Value : TripName - f_id
-                hmap.put(String.valueOf(itemData.getId()), dataSnapshot.getKey());
+                if(!hmap.containsKey(String.valueOf(itemData.getId()))){
+                    hmap.put(String.valueOf(itemData.getId()), dataSnapshot.getKey());
+                    System.out.print(hmap);
 
                 /* Inserting data in DB*/
-                int count = itemHelperDB.getListContent(itemData.getId());
-                if(count <= 0){
-                    System.out.println("Not Inserted!! Inserting Now..");
-                    itemHelperDB.addDataCompleteSync(itemData.getId(), itemData.getItemName(), itemData.getItemQuantity());
-                }
+                    int count = itemHelperDB.getListContent(itemData.getId());
+                    if (count <= 0) {
+                        System.out.println("Not Inserted!! Inserting Now..");
+                        itemHelperDB.addDataCompleteSync(itemData.getId(), itemData.getItemName(), itemData.getItemQuantity());
+                    }
 
                 /* Adding in List */
-                itemDataList.add(itemData);
-                updateListView();
+                    itemDataList.add(itemData);
+                    updateListView();
+                }
             }
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {
@@ -268,17 +271,19 @@ public class ItemListActivity extends AppCompatActivity {
                 boolean flag = itemHelperDB.deleteContent(itemData.getId());
 
                 if(flag){
-                    hmap.remove(String.valueOf(itemData.getId()));
-                    Iterator<ItemData> itr = itemDataList.iterator();
-                    while (itr.hasNext()) {
-                        ItemData element = itr.next();
-                        if(element.getId() == itemData.getId()) {
-                            itemDataList.remove(element);
-                            break;
+                    if(!hmap.containsKey(String.valueOf(itemData.getId()))) {
+                        hmap.remove(String.valueOf(itemData.getId()));
+                        Iterator<ItemData> itr = itemDataList.iterator();
+                        while (itr.hasNext()) {
+                            ItemData element = itr.next();
+                            if (element.getId() == itemData.getId()) {
+                                itemDataList.remove(element);
+                                break;
+                            }
                         }
+                        updateListView();
+                        myAdapter.notifyDataSetChanged();
                     }
-                    updateListView();
-                    myAdapter.notifyDataSetChanged();
                 }
             }
 
@@ -343,7 +348,6 @@ public class ItemListActivity extends AppCompatActivity {
                     edtItemQuantity.setVisibility(View.GONE);
                     btnSave.setVisibility(View.GONE);
                     Toast.makeText(ctx, "Item Added", Toast.LENGTH_SHORT).show();
-                    updateListView();
                 }
             }
         });
