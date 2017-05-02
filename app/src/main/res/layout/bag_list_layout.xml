@@ -54,37 +54,36 @@
 
     <Button
         android:id="@+id/btnBagEdit"
-        android:layout_width="100sp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_marginTop="10sp"
         android:layout_marginStart="10sp"
         android:layout_marginEnd="5sp"
-        android:visibility="gone"
-        android:text="Edit"/>
+        android:text="Edit"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/btnBagDelete"
-        android:layout_width="100sp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/btnBagEdit"
         android:layout_marginTop="10sp"
         android:layout_marginStart="5sp"
         android:layout_marginEnd="5sp"
-        android:visibility="gone"
-        android:text="Delete" />
+        android:layout_centerHorizontal="true"
+        android:text="Delete"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/btnBagCancel"
-        android:layout_width="100sp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/btnBagDelete"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="10sp"
         android:layout_marginStart="5sp"
-        android:visibility="gone"
         android:layout_marginEnd="10sp"
-        android:text="Cancel" />
+        android:text="Cancel"
+        android:visibility="gone"/>
 
     <EditText
         android:id="@+id/editBagName"

@@ -150,7 +150,6 @@ public class TripListActivity extends AppCompatActivity {
             ApplicationConstant.firstLaunch = false;
         }
 
-
         //mLogoutBtn = (Button) findViewById(R.id.logoutBtn);
         mAuth = FirebaseAuth.getInstance();
         ctx = getApplicationContext();

@@ -88,22 +88,20 @@ public class BagListActivity extends AppCompatActivity {
     FirebaseUser user;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private ProgressDialog progressDialog;
     private Context ctx;
     public static DatabaseReference myDbRef, imageURLRef;
     private StorageReference mStorageRef;
     private ListView listBagTrip;
     BagAdapter myAdapter;
-    public static HashMap<String, String> hmap ;
+    public static HashMap<String, String> hmap, hmapval ;
     File photoFile;
+    private static int CAMERA_REQUEST_CODE = 200;
+
     //List<String> bagArray ;
     String TAG = "Suitcase Manager::BagScreen";
     int i = 1;
 
-    private static int CAMERA_REQUEST_CODE = 200;
-    private ProgressDialog progressDialog;
-    String mCurrentPhotoPath;
-    Uri photoURI;
-    String lastTouchedImageView;
     private BagHelper bagHelperDB;
     ArrayList<BagData> bagDataList;
 
@@ -184,6 +182,7 @@ public class BagListActivity extends AppCompatActivity {
 
         //bagArray = new ArrayList<>();
         hmap = new HashMap<String, String>();
+        hmapval = new HashMap<String, String>();
 
         mAuth = FirebaseAuth.getInstance();
         ctx = getApplicationContext();
@@ -217,7 +216,8 @@ public class BagListActivity extends AppCompatActivity {
                 BagData bagData = dataSnapshot.getValue(BagData.class);
 
                 //Key - Value : TripName - f_id
-                hmap.put(bagData.getBagName(), dataSnapshot.getKey());
+                hmap.put(String.valueOf(bagData.getId()), dataSnapshot.getKey());
+                hmapval.put(bagData.getBagName(),dataSnapshot.getKey());
 
                 /* Inserting data in DB*/
                 int count = bagHelperDB.getListContent(bagData.getId());
@@ -266,7 +266,7 @@ public class BagListActivity extends AppCompatActivity {
                 boolean flag = bagHelperDB.deleteContent(bagData.getId());
 
                 if(flag){
-                    hmap.remove(bagData.getBagName());
+                    hmap.remove(String.valueOf(bagData.getId()));
                     Iterator<BagData> itr = bagDataList.iterator();
                     while (itr.hasNext()) {
                         BagData element = itr.next();
@@ -292,7 +292,7 @@ public class BagListActivity extends AppCompatActivity {
         /* List Trip Data */
         listBagTrip = (ListView) findViewById(R.id.listBags);
         // initiate the listadapter
-        myAdapter = new BagAdapter(this, R.layout.bag_list_layout, bagDataList, myDbRef , mStorageRef);
+        myAdapter = new BagAdapter(this, this, R.layout.bag_list_layout, bagDataList, myDbRef , mStorageRef);
         myAdapter.setNotifyOnChange(true);
         listBagTrip.setAdapter(myAdapter);
 
@@ -303,171 +303,6 @@ public class BagListActivity extends AppCompatActivity {
                 createBags();
             }
         });
-
-        /* List Listner */
-        listBagTrip.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final ImageView imageViewBagPicture1 = (ImageView) view.findViewById(R.id.imageViewBagPicture1);
-                final ImageView imageViewBagPicture2 = (ImageView) view.findViewById(R.id.imageViewBagPicture2);
-                final ImageView imageViewBagPicture3 = (ImageView) view.findViewById(R.id.imageViewBagPicture3);
-
-                imageViewBagPicture1.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ViewGroup row = (ViewGroup) v.getParent();
-                        TextView textView = (TextView) row.findViewById(R.id.tripBagLabelName);
-                        String bagID = hmap.get(textView.getText().toString());
-                        System.out.println(TAG+" Icon of  - "+ textView.getText().toString() +"Delete : "+bagID);
-                        imageURLRef = myDbRef.child(bagID);
-                        //myDbRef.child(key).setValue(null);
-                        dispatchTakePictureIntent(imageViewBagPicture1);
-                    }
-                });
-                imageViewBagPicture2.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ViewGroup row = (ViewGroup) v.getParent();
-                        TextView textView = (TextView) row.findViewById(R.id.tripBagLabelName);
-                        String bagID = hmap.get(textView.getText().toString());
-                        System.out.println(TAG+" Icon of  - "+ textView.getText().toString() +"Delete : "+bagID);
-                        imageURLRef = myDbRef.child(bagID);
-                        //myDbRef.child(key).setValue(null);
-                        dispatchTakePictureIntent(imageViewBagPicture2);
-                    }
-                });
-                imageViewBagPicture3.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ViewGroup row = (ViewGroup) v.getParent();
-                        TextView textView = (TextView) row.findViewById(R.id.tripBagLabelName);
-                        String bagID = hmap.get(textView.getText().toString());
-                        System.out.println(TAG+" Icon of  - "+ textView.getText().toString() +"Delete : "+bagID);
-                        imageURLRef = myDbRef.child(bagID);
-                        //myDbRef.child(key).setValue(null);
-                        dispatchTakePictureIntent(imageViewBagPicture3);
-                    }
-                });
-
-            }
-        });
-    }
-
-    private void dispatchTakePictureIntent(ImageView imageViewBagPicture) {
-        lastTouchedImageView =  getResources().getResourceEntryName(imageViewBagPicture.getId());
-        lastTouchedImageView = "imageUrl" + lastTouchedImageView.charAt(lastTouchedImageView.length()-1);
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        //startActivityForResult(intent1, CAMERA_REQUEST_CODE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                photoURI = FileProvider.getUriForFile(this, "edu.uta.cse5320.suitcasemanager.fileprovider", photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
-            }
-        }
-    }
-
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        //OutputStream outputStream = null;
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        /*Bitmap tempImage = BitmapFactory.decodeFile(image.getName());
-        outputStream = new FileOutputStream(image);
-        tempImage.compress(Bitmap.CompressFormat.JPEG,20,outputStream);
-        outputStream.flush();
-        outputStream.close();*/
-        //Bitmap lqImage = Bitmap.createScaledBitmap(tempImage,512,512,false);
-
-        mCurrentPhotoPath = image.getAbsolutePath();
-        return image;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        super.onActivityResult(requestCode, resultCode, data);
-
-        /*if (requestCode == CAMERA_REQUEST_CODE) {
-            Bitmap photo = (Bitmap) data.getExtras().get("data");
-        }*/
-        if(requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK){
-
-            int targetW = 400;
-            int targetH = 500;
-
-            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-            bmOptions.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(photoFile.getAbsolutePath(),bmOptions);
-            int photoW = bmOptions.outWidth;
-            int photoH = bmOptions.outHeight;
-
-            int scaleFactor = Math.min(photoW/targetW,photoH/targetH);
-            bmOptions.inJustDecodeBounds = false;
-            bmOptions.inSampleSize = scaleFactor;
-            bmOptions.inPurgeable = true;
-
-            Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath(),bmOptions);
-
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-
-            byte[] byteFormat = stream.toByteArray();
-            //String encodedImage = Base64.encodeToString(byteFormat, Base64.DEFAULT);
-
-            progressDialog.setMessage("Uploading Image..");
-            progressDialog.show();
-            //BitmapFactory.Options options = new BitmapFactory.Options();
-            //options.inSampleSize = 8;
-            //Bitmap bitmap = BitmapFactory.decodeFile(photoURI.getPath());
-            //Uri imageURI = data.getData();
-            //Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),imageURI);
-
-            //Bitmap bmp = ImagePicker.getImageFromResult(this,resultCode,data);
-            FirebaseUser user = mAuth.getCurrentUser();
-            StorageReference filePath = mStorageRef.child("Photos").child(user.getUid()).child(trip_val).child(photoURI.getLastPathSegment());
-
-            filePath.putBytes(byteFormat)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        // Get a URL to the uploaded content
-                        @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
-
-                        //Updating the URL in Database
-                        Map<String, Object> hopperUpdates = new HashMap<String, Object>();
-                        hopperUpdates.put(lastTouchedImageView, downloadUrl.toString());
-                        imageURLRef.updateChildren(hopperUpdates);
-                        progressDialog.dismiss();
-                        Toast.makeText(ctx, "Image Upload Finished...", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        Toast.makeText(ctx, "Upload Failed!", Toast.LENGTH_SHORT).show();
-                    }
-                    });
-        }
-
     }
 
     public void createBags(){
@@ -512,6 +347,18 @@ public class BagListActivity extends AppCompatActivity {
         mAuth.addAuthStateListener(mAuthListener);
 
         super.onStart();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        /*if (requestCode == CAMERA_REQUEST_CODE) {
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+        }*/
+        if(requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK){
+            BagAdapter.uploadPhoto();
+        }
+
     }
 
     //Left Menu

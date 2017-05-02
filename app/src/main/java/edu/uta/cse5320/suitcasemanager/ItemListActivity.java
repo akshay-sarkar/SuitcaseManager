@@ -97,7 +97,6 @@ public class ItemListActivity extends AppCompatActivity {
     static ItemAdapter myAdapter;
     private String message;
     private static HashMap<String, String> hmap;
-    private static ItemData itemDataVal;
     //List<String> itemArray ;
     String TAG = "Suitcase Manager::ItemScreen";
     int index = 1, i = 1;
@@ -220,10 +219,8 @@ public class ItemListActivity extends AppCompatActivity {
                 progressDialog.dismiss();
                 ++index;
                 ItemData itemData = dataSnapshot.getValue(ItemData.class);
-                itemDataVal = itemData;
-
                 //Key - Value : TripName - f_id
-                hmap.put(itemData.getItemName(), dataSnapshot.getKey());
+                hmap.put(String.valueOf(itemData.getId()), dataSnapshot.getKey());
 
                 /* Inserting data in DB*/
                 int count = itemHelperDB.getListContent(itemData.getId());
@@ -271,7 +268,7 @@ public class ItemListActivity extends AppCompatActivity {
                 boolean flag = itemHelperDB.deleteContent(itemData.getId());
 
                 if(flag){
-                    hmap.remove(itemData.getItemName());
+                    hmap.remove(String.valueOf(itemData.getId()));
                     Iterator<ItemData> itr = itemDataList.iterator();
                     while (itr.hasNext()) {
                         ItemData element = itr.next();
@@ -319,7 +316,7 @@ public class ItemListActivity extends AppCompatActivity {
                 btnSave.setVisibility(View.VISIBLE);
             }
         });
-        v1.setOnTouchListener(new View.OnTouchListener() {
+        /*v1.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 edtItemName.setVisibility(View.GONE);
@@ -327,7 +324,7 @@ public class ItemListActivity extends AppCompatActivity {
                 btnSave.setVisibility(View.GONE);
                 return false;
             }
-        });
+        });*/
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -340,12 +337,13 @@ public class ItemListActivity extends AppCompatActivity {
                     if (id == -1) {
                         System.out.println("Not Inserted");
                     }
-                    ItemData itemData = new ItemData(id, itemName, itemQuantity);
-                    myDbRef.push().setValue(itemData);
+                    ItemData itemDataNew = new ItemData(id, itemName, itemQuantity);
+                    myDbRef.push().setValue(itemDataNew);
                     edtItemName.setVisibility(View.GONE);
                     edtItemQuantity.setVisibility(View.GONE);
                     btnSave.setVisibility(View.GONE);
                     Toast.makeText(ctx, "Item Added", Toast.LENGTH_SHORT).show();
+                    updateListView();
                 }
             }
         });
