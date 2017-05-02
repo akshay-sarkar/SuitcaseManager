@@ -93,6 +93,7 @@
         android:ems="13"
         android:layout_marginTop="10sp"
         android:layout_marginStart="5sp"
+        android:focusable="true"
         android:visibility="gone"/>
 
     <Button

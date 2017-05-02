@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -26,12 +27,15 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -106,6 +110,7 @@ public class BagListActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private GoogleApiClient mGoogleApiClient;
+    private InputMethodManager imm;
 
     // for font
     @Override
@@ -129,6 +134,7 @@ public class BagListActivity extends AppCompatActivity {
         mToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         final NavigationView nv = (NavigationView)findViewById(R.id.nv2);
+
 
         nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -405,8 +411,6 @@ public class BagListActivity extends AppCompatActivity {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
         }*/
 
-
-
         if(requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK){
 
             int targetW = 400;
@@ -554,5 +558,4 @@ public class BagListActivity extends AppCompatActivity {
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver((BroadcastReceiver) br, intentFilter);
     }
-
 }

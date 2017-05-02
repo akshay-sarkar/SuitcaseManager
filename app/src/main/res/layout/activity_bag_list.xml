@@ -8,13 +8,9 @@
     android:layout_height="match_parent"
     tools:context="edu.uta.cse5320.suitcasemanager.BagListActivity">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="510sp"
+        android:layout_height="wrap_content"
         android:background="@color/colorGrey">
 
         <android.support.design.widget.FloatingActionButton
@@ -43,14 +39,12 @@
 
         <ListView
         android:layout_width="match_parent"
-        android:layout_height="420sp"
+        android:layout_height="match_parent"
         android:id="@+id/listBags"
         android:layout_below="@+id/textViewBagHeading"
         android:layout_alignParentStart="true"
         android:layout_marginTop="11dp" />
     </RelativeLayout>
-    </ScrollView>
-
     <android.support.design.widget.NavigationView
         android:id="@+id/nv2"
         android:layout_width="wrap_content"

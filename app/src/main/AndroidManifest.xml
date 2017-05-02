@@ -28,9 +28,9 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".TripListActivity" />
         <activity android:name=".AddTripActivity" />
-        <activity android:name=".BagListActivity" />
+        <activity android:name=".BagListActivity" android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".AirlineActivity" />
-        <activity android:name=".ItemListActivity" />
+        <activity android:name=".ItemListActivity" android:windowSoftInputMode="adjustPan"/>
         <!-- https://developer.android.com/reference/android/support/v4/content/FileProvider.html -->
         <provider
             android:name="android.support.v4.content.FileProvider"

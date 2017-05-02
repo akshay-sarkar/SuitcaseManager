@@ -47,4 +47,6 @@ public class ApplicationConstant {
             "Don't assume that buying the most expensive designer suitcase will get you an upgrade - instead, it's more likely to attract thieves at the airport and on your travels.\n" +
                     "Baggage allowance can vary from airline to airline. Make sure you are aware of your limits before you reach the airport."
     };
+
+
 }

@@ -1,6 +1,7 @@
 package edu.uta.cse5320.dao;
 
 import android.app.AlertDialog;
+import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,6 +10,8 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -43,6 +46,11 @@ public class BagAdapter extends ArrayAdapter<BagData>{
     private StorageReference mStorageRef;
     public static final String EXTRA_MESSAGE = "edu.uta.cse5320.MESSAGE";
     public static HashMap<String, String> hashMapBag;
+    private InputMethodManager imm;
+
+
+
+
 
 
     public BagAdapter(Context context, int textViewResourceId, ArrayList<BagData> bagData, DatabaseReference myDBRef, StorageReference myStorageRef) {
@@ -57,6 +65,7 @@ public class BagAdapter extends ArrayAdapter<BagData>{
 
     public View getView(int position, View convertView, final ViewGroup parent) {
 
+        imm = (InputMethodManager)context.getSystemService(context.INPUT_METHOD_SERVICE);
 
         final BagData bagData = bagDatas.get(position);
 
@@ -72,6 +81,7 @@ public class BagAdapter extends ArrayAdapter<BagData>{
             final Button btnSave = (Button) convertView.findViewById(R.id.btnBagSave);
             final Button btnSaveCancel = (Button) convertView.findViewById(R.id.btnBagSaveCancel);
             final EditText editBagName = (EditText) convertView.findViewById(R.id.editBagName);
+
 
             if (bagName != null) {
                 bagName.setText(bagData.getBagName());
