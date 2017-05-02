@@ -58,7 +58,7 @@ public class TripAdapter extends ArrayAdapter<TripData> {
 
             ImageView imageViewEdit = (ImageView) convertView.findViewById(R.id.imageViewEdit);
             ImageView imageViewDelete = (ImageView) convertView.findViewById(R.id.imageViewDelete);
-            ImageView imageViewPublish = (ImageView) convertView.findViewById(R.id.imageViewPublish);
+            ImageView imageViewAirlineInfo = (ImageView) convertView.findViewById(R.id.imageViewPublish);
 
             if (tripName != null) {
                 tripName.setText(tripData.getTripName());
@@ -95,8 +95,8 @@ public class TripAdapter extends ArrayAdapter<TripData> {
                 }
             });
 
-            imageViewPublish.setTag(tripData.getTripName());
-            imageViewPublish.setOnClickListener(new View.OnClickListener() {
+            imageViewAirlineInfo.setTag(tripData.getTripName());
+            imageViewAirlineInfo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     hashMapTrip = TripListActivity.getTripMap();
@@ -125,7 +125,7 @@ public class TripAdapter extends ArrayAdapter<TripData> {
             imageViewDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //Toast.makeText(context, "Deleted  - "+ v.getTag().toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Deleted  Trip - "+ v.getTag().toString(), Toast.LENGTH_SHORT).show();
                     hashMapTrip = TripListActivity.getTripMap();
                     String key = hashMapTrip.get(v.getTag().toString());
                     if(!key.isEmpty()){

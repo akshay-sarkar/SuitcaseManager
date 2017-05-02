@@ -97,7 +97,7 @@ public class BagListActivity extends AppCompatActivity {
     File photoFile;
     //List<String> bagArray ;
     String TAG = "Suitcase Manager::BagScreen";
-    int index = 1, i = 1;
+    int i = 1;
 
     private static int CAMERA_REQUEST_CODE = 200;
     private ProgressDialog progressDialog;
@@ -214,7 +214,6 @@ public class BagListActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
                 System.out.println(TAG+ " onChildAdded" + dataSnapshot);
                 progressDialog.dismiss();
-                ++index;
                 BagData bagData = dataSnapshot.getValue(BagData.class);
 
                 //Key - Value : TripName - f_id
@@ -410,7 +409,6 @@ public class BagListActivity extends AppCompatActivity {
         /*if (requestCode == CAMERA_REQUEST_CODE) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
         }*/
-
         if(requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK){
 
             int targetW = 400;
@@ -474,8 +472,8 @@ public class BagListActivity extends AppCompatActivity {
 
     public void createBags(){
 
-        String editBagName = "Bag Item-"+index;
-        int editBagItems = 12;//editTextTripStartDate.getText().toString();
+        String editBagName = "Bag";
+        int editBagItems = 0;
 
         long id = bagHelperDB.addData(editBagName, editBagItems, "", "", "");
         if(id == -1){

@@ -55,8 +55,6 @@ public class ItemAdapter extends ArrayAdapter<ItemData>{
     private ImageView itemEdit;
     private EditText editItemName,editItemQuantity;
 
-
-
     public ItemAdapter(Context context, int textViewResourceId, ArrayList<ItemData> itemData, DatabaseReference myDBRef, StorageReference myStorageRef) {
         super(context, textViewResourceId, itemData);
         this.context = context;
@@ -118,7 +116,7 @@ public class ItemAdapter extends ArrayAdapter<ItemData>{
                 btnDelete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(context, "Deleted  - "+ v.getTag().toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Deleted  Item - "+ v.getTag().toString(), Toast.LENGTH_SHORT).show();
                         hashMapItem = ItemListActivity.getItemMap();
                         String key = hashMapItem.get(v.getTag().toString());
                         if(!key.isEmpty()){
@@ -164,7 +162,7 @@ public class ItemAdapter extends ArrayAdapter<ItemData>{
                             updateTripDetails.put("itemQuantity", Integer.parseInt(editItemQuantity.getText().toString()));
                             ItemListActivity.myDbRef.child(key).updateChildren(updateTripDetails);
                         }
-                        Toast.makeText(context, "Item Updated", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Item Updated - "+v.getTag().toString(), Toast.LENGTH_SHORT).show();
                         getVisibility(editItemName,editItemQuantity,itemName,itemQuantity,btnSave,btnSaveCancel,itemEdit,View.GONE,View.VISIBLE);
                     }
                 });
