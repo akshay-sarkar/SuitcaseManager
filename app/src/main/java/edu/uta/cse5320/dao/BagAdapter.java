@@ -329,16 +329,12 @@ public class BagAdapter extends ArrayAdapter<BagData>{
                 .into(image);
         //
         // image.setImageResource(R.drawable.YOUR_IMAGE_ID);
-        String add = "No Address Found";
-        if(addresses != null){
+        String add = "No Address Found!!";
+        if(addresses != null && addresses.size()>0){
             add = addresses.get(0).getAddressLine(0)+"\n"+
                     addresses.get(0).getAddressLine(1)+"\n"+
                     addresses.get(0).getAddressLine(2);
 
-//                    currentContact.getStreetAddress() + ", " +
-//                    currentContact.getCity() + ", " +
-//                    currentContact.getState() + " " +
-//                    currentContact.getZipCode();
         }
         AlertDialog.Builder builder =
                 new AlertDialog.Builder(context).

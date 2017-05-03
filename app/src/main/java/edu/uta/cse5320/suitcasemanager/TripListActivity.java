@@ -71,7 +71,7 @@ public class TripListActivity extends AppCompatActivity {
     ArrayList<TripData> tripDataList;
     TripHelper tripHelperDB;
     private DrawerLayout mDrawerLayout;
-    private ProgressDialog progressDialog;
+    private ProgressDialog progressDialog = null;
     private ActionBarDrawerToggle mToggle;
     AlertDialog alertDialog= null;
     private boolean tipFlag;
@@ -115,7 +115,6 @@ public class TripListActivity extends AppCompatActivity {
         if(tipFlag){
             nv.getMenu().findItem(R.id.nav4).setVisible(true);
             nv.getMenu().findItem(R.id.nav5).setVisible(false);
-
         }
         else{
             nv.getMenu().findItem(R.id.nav4).setVisible(false);
@@ -157,7 +156,7 @@ public class TripListActivity extends AppCompatActivity {
         //progressDialog = new ProgressDialog(this);
         //progressDialog.setMessage("Retrieving Your Data..");
         //progressDialog.show();
-        progressDialog = ProgressDialog.show(this, "", "Retrieving Your Data");
+
 
         //Tip Dialog Call
         if(tipFlag && ApplicationConstant.firstLaunch){
@@ -165,6 +164,7 @@ public class TripListActivity extends AppCompatActivity {
             tipDialog.show();
             ApplicationConstant.firstLaunch = false;
         }
+        progressDialog = ProgressDialog.show(this, "", "Retrieving Your Data");
 
         //mLogoutBtn = (Button) findViewById(R.id.logoutBtn);
         mAuth = FirebaseAuth.getInstance();
@@ -178,21 +178,21 @@ public class TripListActivity extends AppCompatActivity {
 
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        //checking firebase connection
-        myDbRef = database.getReference(".info/connected");
-        myDbRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                boolean connected = snapshot.getValue(Boolean.class);
-                if (!connected) {
-                    //progressDialog.dismiss();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-            }
-        });
+//        //checking firebase connection
+//        myDbRef = database.getReference(".info/connected");
+//        myDbRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot snapshot) {
+//                boolean connected = snapshot.getValue(Boolean.class);
+//                if (!connected) {
+//                    //progressDialog.dismiss();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError error) {
+//            }
+//        });
 
         myDbRef = database.getReference(ApplicationConstant.root_prop).child(root_val).child(ApplicationConstant.root_trip_prop);
         hmap = new HashMap<String, String>();
@@ -204,12 +204,13 @@ public class TripListActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()) {
                     Toast.makeText(ctx, "No Trip Exist!!", Toast.LENGTH_LONG).show();
-                    //progressDialog.dismiss();
+                    if(progressDialog != null)
+                        progressDialog.dismiss();
                 }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                //progressDialog.dismiss();
+                progressDialog.dismiss();
             }
         });
 
