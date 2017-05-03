@@ -243,6 +243,7 @@ public class TripListActivity extends AppCompatActivity {
                 progressDialog.dismiss();
 
                 if(countValue==1) {
+                    countValue++;
                     ShowcaseConfig config = new ShowcaseConfig();
                     config.setDelay(300);
                     MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(TripListActivity.this, "102");

@@ -248,6 +248,7 @@ public class BagListActivity extends AppCompatActivity {
                     bagHelperDB.addDataCompleteSync(bagData.getId(), bagData.getBagName(), bagData.getItemQuantity(), bagData.getImageUrl1(),bagData.getImageUrl2(),bagData.getImageUrl3());
                 }
                 if(countValue == 1){
+                    countValue++;
                     ShowcaseConfig config = new ShowcaseConfig();
                     config.setDelay(300);
                     MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(BagListActivity.this,"105");

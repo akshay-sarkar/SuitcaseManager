@@ -387,13 +387,13 @@ public class ItemListActivity extends AppCompatActivity {
             }
         });
 
-        new MaterialShowcaseView.Builder(this)
-                .setTarget(myFab)
-                .setDismissText("GOT IT")
-                .setContentText("Click this to Add New Items")
-                .setDelay(1) // optional but starting animations immediately in onCreate can make them choppy
-                .singleUse("106")
-                .show();
+        ShowcaseConfig config = new ShowcaseConfig();
+        config.setDelay(300);
+        MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(ItemListActivity.this,"106");
+        sequence.setConfig(config);
+        sequence.addSequenceItem(myFab,"Click this to Add New Items", "GOT IT");
+        sequence.addSequenceItem(btnViewQR,"Click to generate the QR code of the items in the bag", "GOT IT");
+        sequence.start();
 
         btnViewQR.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -404,6 +404,9 @@ public class ItemListActivity extends AppCompatActivity {
                 TextView textQR = (TextView) dialog.findViewById(R.id.textViewQR);
                 textQR.setText(String.valueOf("QR Code for the Bag : " + ApplicationConstant.bag_name));
                 final ImageView imageQR = (ImageView) dialog.findViewById(R.id.imageViewQR);
+                btnSaveQR = (Button) dialog.findViewById(R.id.buttonSaveQR);
+                btnShareQR = (Button) dialog.findViewById(R.id.buttonShareQR);
+                btnBackQR = (Button) dialog.findViewById(R.id.buttonBack);
 
                 QRCodeWriter writer = new QRCodeWriter();
                 try {
@@ -423,9 +426,7 @@ public class ItemListActivity extends AppCompatActivity {
                 } catch (WriterException e) {
                     e.printStackTrace();
                 }
-                    btnSaveQR = (Button) dialog.findViewById(R.id.buttonSaveQR);
-                    btnShareQR = (Button) dialog.findViewById(R.id.buttonShareQR);
-                    btnBackQR = (Button) dialog.findViewById(R.id.buttonBack);
+
 
                     btnBackQR.setOnClickListener(new View.OnClickListener() {
                         @Override
