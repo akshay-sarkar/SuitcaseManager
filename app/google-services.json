@@ -15,7 +15,23 @@
       },
       "oauth_client": [
         {
-          "client_id": "681643837475-i2fmsl7lk5quu6939j3sbutc188o3c6a.apps.googleusercontent.com",
+          "client_id": "681643837475-hnpketr34plfflhghmhoripp6e199qf8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.uta.cse5320.suitcasemanager",
+            "certificate_hash": "434b1782143e77956c169cd6d7807d364255545a"
+          }
+        },
+        {
+          "client_id": "681643837475-jmd9mpck1ecvncq5kbkhdgjd74bs64km.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.uta.cse5320.suitcasemanager",
+            "certificate_hash": "a95e151836632c2436f9bc284fa6fbcadd8f444d"
+          }
+        },
+        {
+          "client_id": "681643837475-or87ebi8qrflg1rk1hs63o2chr3n2g3k.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "edu.uta.cse5320.suitcasemanager",
@@ -23,7 +39,7 @@
           }
         },
         {
-          "client_id": "681643837475-b30ruidj2m8vctcdu1t4s548d7gdcs1c.apps.googleusercontent.com",
+          "client_id": "681643837475-g7pkkbcsodej3g7sd3sp2p7gamaeraro.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "edu.uta.cse5320.suitcasemanager",
