@@ -426,7 +426,7 @@ public class BagListActivity extends AppCompatActivity {
 
                     if (ActivityCompat.shouldShowRequestPermissionRationale(BagListActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
 
-                        Snackbar.make(findViewById(R.id.activity_bag_list), "MyContactList requires this permission to locate your contacts", Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
+                        Snackbar.make(findViewById(R.id.activity_bag_list), "Suitcase Manager requires this permission to locate your contacts", Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
 

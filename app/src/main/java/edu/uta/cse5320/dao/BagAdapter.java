@@ -104,7 +104,7 @@ public class BagAdapter extends ArrayAdapter<BagData>{
             final Button btnSaveCancel = (Button) convertView.findViewById(R.id.btnBagSaveCancel);
             final EditText editBagName = (EditText) convertView.findViewById(R.id.editBagName);
             hashMapBag = BagListActivity.getTripMap();
-            progressDialog = new ProgressDialog(activity);
+            //progressDialog = new ProgressDialog(activity);
 
 
 
@@ -395,8 +395,10 @@ public class BagAdapter extends ArrayAdapter<BagData>{
         byte[] byteFormat = stream.toByteArray();
         //String encodedImage = Base64.encodeToString(byteFormat, Base64.DEFAULT);
 
-        progressDialog.setMessage("Uploading Image..");
-        progressDialog.show();
+        progressDialog = ProgressDialog.show(context, "", "Uploading Image...");
+
+        //progressDialog.setMessage("Uploading Image..");
+        //progressDialog.show();
         //BitmapFactory.Options options = new BitmapFactory.Options();
         //options.inSampleSize = 8;
         //Bitmap bitmap = BitmapFactory.decodeFile(photoURI.getPath());
