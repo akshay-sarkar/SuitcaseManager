@@ -11,18 +11,22 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -114,6 +118,7 @@ public class ItemListActivity extends AppCompatActivity {
     private static HashMap<String, String> hmap;
     //List<String> itemArray ;
     String TAG = "Suitcase Manager::ItemScreen";
+    private static final int PERMISSION_REQUEST_CODE = 1;
     int index = 1, i = 1;
 
     private static int CAMERA_REQUEST_CODE = 200;
@@ -440,24 +445,18 @@ public class ItemListActivity extends AppCompatActivity {
                         Bitmap bm=imageQR.getDrawingCache();
                         OutputStream fOut = null;
                         //Uri outputFileUri;
-                        try {
-                            File root = new File(Environment.getExternalStorageDirectory()
-                                    + File.separator + "Suitcase Manager" + File.separator);
-                            root.mkdirs();
-                            File sdImageMainDirectory = new File(root, ApplicationConstant.bag_name + "QRCode.jpg");
-                            //outputFileUri = Uri.fromFile(sdImageMainDirectory);
-                            fOut = new FileOutputStream(sdImageMainDirectory);
-                            Toast.makeText(ItemListActivity.this, "Image Saved to SD Card", Toast.LENGTH_SHORT).show();
-                        } catch (Exception e) {
-                            Toast.makeText(ItemListActivity.this, "Error occured. Please try again later.", Toast.LENGTH_SHORT).show();
+                        if (Build.VERSION.SDK_INT >= 23)
+                        {
+                            if (checkPermissionStorage()) {
+                                storeImages(bm,fOut);
+                            }else {
+                            requestPermission(); // Code for permission
                         }
-                        try {
-                            bm.compress(Bitmap.CompressFormat.PNG, 100, fOut);
-                            fOut.flush();
-                            fOut.close();
-                        } catch (Exception e) {
-                            Toast.makeText(ItemListActivity.this, "Error occured. Please try again later.", Toast.LENGTH_SHORT).show();
-                        }
+                    }
+                    else
+                    {
+                        storeImages(bm,fOut);
+                    }
                     }
                 });
 
@@ -471,16 +470,18 @@ public class ItemListActivity extends AppCompatActivity {
                         share.setType("image/jpeg");
                         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                         icon.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                        File f = new File(Environment.getExternalStorageDirectory() + File.separator + "temporary_file.jpg");
-                        try {
-                            f.createNewFile();
-                            FileOutputStream fo = new FileOutputStream(f);
-                            fo.write(bytes.toByteArray());
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        if (Build.VERSION.SDK_INT >= 23)
+                        {
+                            if (checkPermissionStorage()) {
+                                shareImages(bytes,share);
+                            }else {
+                                requestPermission(); // Code for permission
+                            }
                         }
-                        share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/temporary_file.jpg"));
-                        startActivity(Intent.createChooser(share, "Share Image"));
+                        else
+                        {
+                            shareImages(bytes,share);
+                        }
                     }
                 });
                 dialog.show();
@@ -560,5 +561,70 @@ public class ItemListActivity extends AppCompatActivity {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver((BroadcastReceiver) br, intentFilter);
+    }
+
+    public void storeImages(Bitmap bm, OutputStream fOut){
+        try {
+            File root = new File(Environment.getExternalStorageDirectory()
+                    + File.separator + "Suitcase Manager" + File.separator);
+            root.mkdirs();
+            File sdImageMainDirectory = new File(root, ApplicationConstant.bag_name + "QRCode.jpg");
+            //outputFileUri = Uri.fromFile(sdImageMainDirectory);
+            fOut = new FileOutputStream(sdImageMainDirectory);
+            Toast.makeText(ItemListActivity.this, "Image Saved to SD Card", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(ItemListActivity.this, "Error occured. Please try again later.", Toast.LENGTH_SHORT).show();
+        }
+        try {
+            bm.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+            fOut.flush();
+            fOut.close();
+        } catch (Exception e) {
+            Toast.makeText(ItemListActivity.this, "Error occured. Please try again later.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private boolean checkPermissionStorage() {
+        int result = ContextCompat.checkSelfPermission(ItemListActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (result == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void requestPermission() {
+
+        if (ActivityCompat.shouldShowRequestPermissionRationale(ItemListActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            Toast.makeText(ItemListActivity.this, "Write External Storage permission allows us to do store images. Please allow this permission in App Settings.", Toast.LENGTH_LONG).show();
+        } else {
+            ActivityCompat.requestPermissions(ItemListActivity.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.e("value", "Permission Granted, Now you can use local drive .");
+                } else {
+                    Log.e("value", "Permission Denied, You cannot use local drive .");
+                }
+                break;
+        }
+    }
+
+    private void shareImages(ByteArrayOutputStream bytes,Intent share){
+        File f = new File(Environment.getExternalStorageDirectory() + File.separator + "temporary_file.jpg");
+        try {
+            f.createNewFile();
+            FileOutputStream fo = new FileOutputStream(f);
+            fo.write(bytes.toByteArray());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/temporary_file.jpg"));
+        startActivity(Intent.createChooser(share, "Share Image"));
     }
 }
