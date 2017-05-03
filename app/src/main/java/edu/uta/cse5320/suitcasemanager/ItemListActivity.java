@@ -70,6 +70,9 @@ import edu.uta.cse5320.dao.ItemHelper;
 import edu.uta.cse5320.dao.TripData;
 import edu.uta.cse5320.util.ApplicationConstant;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
+import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 
 import static edu.uta.cse5320.dao.BagAdapter.hashMapBag;
 import static edu.uta.cse5320.suitcasemanager.TripListActivity.EXTRA_MESSAGE;
@@ -139,6 +142,7 @@ public class ItemListActivity extends AppCompatActivity {
         mToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         final NavigationView nv = (NavigationView)findViewById(R.id.nv2);
+        final TextView itemHeading = (TextView) findViewById(R.id.textViewItemHeading);
 
         nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -319,6 +323,16 @@ public class ItemListActivity extends AppCompatActivity {
                 edtItemName.setVisibility(View.VISIBLE);
                 edtItemQuantity.setVisibility(View.VISIBLE);
                 btnSave.setVisibility(View.VISIBLE);
+
+                ShowcaseConfig config = new ShowcaseConfig();
+                config.setDelay(500);
+                MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(ItemListActivity.this,"107");
+                sequence.setConfig(config);
+                sequence.addSequenceItem(edtItemName,"Enter Value for Item Name in the first text box.", "GOT IT");
+                sequence.addSequenceItem(edtItemQuantity,"Enter value for Item Quantity in the second text box(Above save button)", "GOT IT");
+                sequence.addSequenceItem(btnSave,"Press save to create new items", "GOT IT");
+                sequence.start();
+
             }
         });
         /*v1.setOnTouchListener(new View.OnTouchListener() {
@@ -351,6 +365,14 @@ public class ItemListActivity extends AppCompatActivity {
                 }
             }
         });
+
+        new MaterialShowcaseView.Builder(this)
+                .setTarget(myFab)
+                .setDismissText("GOT IT")
+                .setContentText("Click this to Add New Items")
+                .setDelay(1) // optional but starting animations immediately in onCreate can make them choppy
+                .singleUse("106")
+                .show();
 
     }
 

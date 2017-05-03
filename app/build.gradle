@@ -36,6 +36,8 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
     compile 'com.google.firebase:firebase-crash:10.0.1'
+    compile 'com.github.deano2390:MaterialShowcaseView:1.1.0'
+
     testCompile 'junit:junit:4.12'
 }
 apply plugin: 'com.google.gms.google-services'

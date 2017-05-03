@@ -43,6 +43,7 @@ import edu.uta.cse5320.dao.AirlineAdapter;
 import edu.uta.cse5320.dao.AirlineData;
 import edu.uta.cse5320.util.ApplicationConstant;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
 
 public class AirlineActivity extends AppCompatActivity {
 
@@ -148,6 +149,15 @@ public class AirlineActivity extends AppCompatActivity {
         extras = getIntent().getExtras();
         if(extras!=null){
             airlineName = extras.getString("airlineName");
+        }
+        else{
+            new MaterialShowcaseView.Builder(this)
+                    .setTarget(editSearch)
+                    .setDismissText("GOT IT")
+                    .setContentText("Type in the Airline Name to search in the database")
+                    .setDelay(100) // optional but starting animations immediately in onCreate can make them choppy
+                    .singleUse("103")
+                    .show();
         }
         // Capture Text in EditText
         editSearch.addTextChangedListener(new TextWatcher() {
@@ -269,6 +279,7 @@ public class AirlineActivity extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError databaseError) {}
         });
+
     }
     @Override
     protected void onStart() {

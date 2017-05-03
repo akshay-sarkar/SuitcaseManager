@@ -1,5 +1,6 @@
 package edu.uta.cse5320.dao;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +20,8 @@ import edu.uta.cse5320.suitcasemanager.AirlineActivity;
 import edu.uta.cse5320.suitcasemanager.BagListActivity;
 import edu.uta.cse5320.suitcasemanager.R;
 import edu.uta.cse5320.suitcasemanager.TripListActivity;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
+import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 
 /**
  * Created by Akshay on 3/16/2017.
@@ -32,14 +35,16 @@ public class TripAdapter extends ArrayAdapter<TripData> {
     private Context context;
     public static final String EXTRA_MESSAGE = "edu.uta.cse5320.MESSAGE";
     public static HashMap<String, String> hashMapTrip;
+    private Activity activity;
 
     public TripAdapter(Context context, int textViewResourceId,
-                       ArrayList<TripData> tripData) {
+                       ArrayList<TripData> tripData, Activity activity) {
         super(context, textViewResourceId, tripData);
         this.context = context;
         this.tripDatas = tripData;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mViewResourceId = textViewResourceId;
+        this.activity = activity;
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {

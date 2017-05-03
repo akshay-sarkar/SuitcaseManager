@@ -86,6 +86,9 @@ import edu.uta.cse5320.dao.BagData;
 import edu.uta.cse5320.dao.BagHelper;
 import edu.uta.cse5320.util.ApplicationConstant;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
+import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 
 import static edu.uta.cse5320.util.ApplicationConstant.root_prop;
 import static edu.uta.cse5320.util.ApplicationConstant.root_trip_prop;
@@ -106,6 +109,7 @@ public class BagListActivity extends AppCompatActivity {
     public static HashMap<String, String> hmap, hmapval ;
     File photoFile;
     private static int CAMERA_REQUEST_CODE = 200;
+    private TextView bagHeading;
 
     final int PERMISSION_REQUEST_LOCATION = 101;
     LocationManager locationManager;
@@ -145,6 +149,7 @@ public class BagListActivity extends AppCompatActivity {
         mToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         final NavigationView nv = (NavigationView)findViewById(R.id.nv2);
+        bagHeading = (TextView) findViewById(R.id.textViewBagHeading);
 
 
         nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -318,6 +323,14 @@ public class BagListActivity extends AppCompatActivity {
                 createBags();
             }
         });
+
+        new MaterialShowcaseView.Builder(this)
+                .setTarget(myFab)
+                .setDismissText("GOT IT")
+                .setContentText("Click this to Add New Bags")
+                .setDelay(1) // optional but starting animations immediately in onCreate can make them choppy
+                .singleUse("104") // provide a unique ID used to ensure it is only shown once
+                .show();
     }
 
     public void createBags(){
@@ -332,6 +345,16 @@ public class BagListActivity extends AppCompatActivity {
         BagData bagData = new BagData(id, editBagName, editBagItems, "", "", "");
         myDbRef.push().setValue(bagData);
         Toast.makeText(ctx, "Bag Added", Toast.LENGTH_SHORT).show();
+
+        ShowcaseConfig config = new ShowcaseConfig();
+        config.setDelay(500);
+        MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(BagListActivity.this,"105");
+        sequence.setConfig(config);
+        sequence.addSequenceItem(bagHeading,"Click on the Bag Name to Items for the bag.", "GOT IT");
+        sequence.addSequenceItem(bagHeading,"Long Pressing the Bag Name allows you to Edit & Delete Bags", "GOT IT");
+        sequence.addSequenceItem(bagHeading,"Pressing the Image once allows you to take the photo", "GOT IT");
+        sequence.addSequenceItem(bagHeading,"Long pressing the Image shows the Latitude and Longitude as well the actual image", "GOT IT");
+        sequence.start();
     }
     
     private void updateListView(){

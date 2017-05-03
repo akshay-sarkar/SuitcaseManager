@@ -46,6 +46,8 @@ import java.util.Map;
 import edu.uta.cse5320.dao.TripData;
 import edu.uta.cse5320.dao.TripHelper;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
+import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 
 public class AddTripActivity extends AppCompatActivity{
 
@@ -213,6 +215,18 @@ public class AddTripActivity extends AppCompatActivity{
             //dbUpdates(myDbRef);
             myDbRef.addValueEventListener(postListener);
         }
+
+        ShowcaseConfig config = new ShowcaseConfig();
+        config.setDelay(500);
+        MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(this, "101");
+        sequence.setConfig(config);
+        sequence.addSequenceItem(editTextTripName,"Enter a name for your trip", "GOT IT");
+        sequence.addSequenceItem(mBtnSetStartDate,"Choose a date today/future as a start date for the trip", "GOT IT");
+        sequence.addSequenceItem(mBtnSetEndDate,"Choose a date in future after the start date", "GOT IT");
+        sequence.addSequenceItem(spinnerTripAirline,"Choose an Airline you wish to travel", "GOT IT");
+        sequence.addSequenceItem(editTextTripDetails,"Give more description about the trip", "GOT IT");
+        sequence.addSequenceItem(mSaveTripButton,"Save the trip instance", "GOT IT");
+        sequence.start();
 
     }
 

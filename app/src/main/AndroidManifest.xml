@@ -29,12 +29,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
-        <activity android:name=".TripListActivity" />
-        <activity android:name=".AddTripActivity" />
-        <activity android:name=".BagListActivity" android:windowSoftInputMode="adjustPan"/>
-        <activity android:name=".AirlineActivity" />
-        <activity android:name=".ItemListActivity" android:windowSoftInputMode="adjustPan"/>
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".TripListActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".AddTripActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".BagListActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity android:name=".AirlineActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ItemListActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
         <!-- https://developer.android.com/reference/android/support/v4/content/FileProvider.html -->
         <provider
             android:name="android.support.v4.content.FileProvider"

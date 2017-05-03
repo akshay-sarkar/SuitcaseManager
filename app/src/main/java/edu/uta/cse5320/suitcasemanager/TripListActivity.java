@@ -50,6 +50,9 @@ import edu.uta.cse5320.dao.TripData;
 import edu.uta.cse5320.dao.TripHelper;
 import edu.uta.cse5320.util.ApplicationConstant;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
+import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 
 import static edu.uta.cse5320.util.ApplicationConstant.root_val;
 
@@ -75,6 +78,7 @@ public class TripListActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mToggle;
     AlertDialog alertDialog= null;
     private boolean tipFlag;
+    private TextView tripHeading;
 
     @Override
     public void onBackPressed() {
@@ -106,6 +110,7 @@ public class TripListActivity extends AppCompatActivity {
         mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.menu_open, R.string.menu_close);
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
+        tripHeading = (TextView) findViewById(R.id.textViewTripHeading);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -234,6 +239,16 @@ public class TripListActivity extends AppCompatActivity {
 
                 // Dimiss the dialog box
                 progressDialog.dismiss();
+
+                ShowcaseConfig config = new ShowcaseConfig();
+                config.setDelay(500);
+                MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(TripListActivity.this,"102");
+                sequence.setConfig(config);
+                sequence.addSequenceItem(tripHeading,"Click on the Trip Name to add more bags.", "GOT IT");
+                sequence.addSequenceItem(tripHeading,"The Info Button Gives Details about the Airlines", "GOT IT");
+                sequence.addSequenceItem(tripHeading,"The Delete button deletes the Trip", "GOT IT");
+                sequence.addSequenceItem(tripHeading,"The Edit Button is used to edit the trip details except trip name", "GOT IT");
+                sequence.start();
             }
 
             @Override
@@ -299,7 +314,7 @@ public class TripListActivity extends AppCompatActivity {
         /* List Trip Data */
         listViewTrip = (ListView) findViewById(R.id.listTrips);
         // initiate the listadapter
-        myTripAdapter = new TripAdapter(this, R.layout.trip_list_layout, tripDataList);
+        myTripAdapter = new TripAdapter(this, R.layout.trip_list_layout, tripDataList, this);
         myTripAdapter.setNotifyOnChange(true);
         listViewTrip.setAdapter(myTripAdapter);
 
@@ -339,6 +354,15 @@ public class TripListActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        new MaterialShowcaseView.Builder(this)
+                .setTarget(myFab)
+                .setDismissText("GOT IT")
+                .setContentText("Click this to Add New Trips")
+                .setDelay(1) // optional but starting animations immediately in onCreate can make them choppy
+                .singleUse("100")
+                .show();
+
     }
 
     @Override
