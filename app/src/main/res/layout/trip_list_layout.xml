@@ -8,7 +8,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Trip Name"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:layout_alignParentStart="true"
         android:layout_marginStart="13dp"
@@ -79,7 +79,7 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/tripListLabelName"
         android:layout_below="@+id/textViewAirlineName"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="10dp"
         android:text="Start Date"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -93,6 +93,7 @@
         android:layout_alignBaseline="@+id/textViewStartDate"
         android:layout_alignLeft="@id/textViewAirline"
         android:text="01/01/1990"
+        android:textSize="18sp"
         />
 
     <TextView
@@ -101,7 +102,7 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/tripListLabelName"
         android:layout_below="@+id/textViewStartDate"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="10dp"
         android:text="End Date"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -114,6 +115,7 @@
         android:layout_toRightOf="@+id/textViewEndDate"
         android:layout_alignBaseline="@+id/textViewEndDate"
         android:text="01/01/1990"
+        android:textSize="18sp"
         android:layout_alignStart="@+id/textViewStartDateVal"
         />
 

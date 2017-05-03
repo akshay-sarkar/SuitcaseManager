@@ -22,7 +22,7 @@
         android:layout_marginLeft="25dp"
         android:layout_marginTop="25dp"
         android:text="Add/Edit Trip Details"
-        android:textSize="18sp"
+        android:textSize="24sp"
         android:textStyle="bold" />
 
     <ScrollView
