@@ -1,5 +1,6 @@
 package edu.uta.cse5320.suitcasemanager;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -73,6 +74,7 @@ public class TripListActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private ActionBarDrawerToggle mToggle;
     AlertDialog alertDialog= null;
+    private boolean tipFlag;
 
     @Override
     public void onBackPressed() {
@@ -91,10 +93,13 @@ public class TripListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_list);
 
-
         //shared prefernece for tip flag
         final SharedPreferences pref = getApplicationContext().getSharedPreferences(ApplicationConstant.MySharedPrefName, MODE_PRIVATE);
         final SharedPreferences.Editor editor = getSharedPreferences(ApplicationConstant.MySharedPrefName, MODE_PRIVATE).edit();
+
+        tipFlag = pref.getBoolean(ApplicationConstant.tipflag, true);
+
+
 
         // Left Menu / Navigational Layout
         mDrawerLayout = (DrawerLayout) findViewById(R.id.activity_trip_list);
@@ -106,6 +111,16 @@ public class TripListActivity extends AppCompatActivity {
 
         final NavigationView nv = (NavigationView)findViewById(R.id.nv1);
         //nv.getMenu().findItem(R.id.nav5).getActionView().setVisibility(View.GONE);
+
+        if(tipFlag){
+            nv.getMenu().findItem(R.id.nav4).setVisible(true);
+            nv.getMenu().findItem(R.id.nav5).setVisible(false);
+
+        }
+        else{
+            nv.getMenu().findItem(R.id.nav4).setVisible(false);
+            nv.getMenu().findItem(R.id.nav5).setVisible(true);
+        }
         nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
@@ -130,20 +145,21 @@ public class TripListActivity extends AppCompatActivity {
                     editor.apply();
                 }else{
                     mDrawerLayout.closeDrawer(Gravity.LEFT);
-                    System.out.println("--- Reache Here -- "+ menuItem.getTitle()); //Airline Information
+                    System.out.println("--- Reached Here -- "+ menuItem.getTitle()); //Airline Information
                 }
                 return true;
             }
         });
 
         checkInternet();
+
         //Progress for operations
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Retrieving Your Data..");
-        progressDialog.show();
+        //progressDialog = new ProgressDialog(this);
+        //progressDialog.setMessage("Retrieving Your Data..");
+        //progressDialog.show();
+        progressDialog = ProgressDialog.show(this, "", "Retrieving Your Data");
 
         //Tip Dialog Call
-        boolean tipFlag = pref.getBoolean(ApplicationConstant.tipflag, true);
         if(tipFlag && ApplicationConstant.firstLaunch){
             TipDialogClass tipDialog = new TipDialogClass(TripListActivity.this);
             tipDialog.show();
@@ -169,7 +185,7 @@ public class TripListActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot snapshot) {
                 boolean connected = snapshot.getValue(Boolean.class);
                 if (!connected) {
-                    progressDialog.dismiss();
+                    //progressDialog.dismiss();
                 }
             }
 
@@ -188,12 +204,12 @@ public class TripListActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()) {
                     Toast.makeText(ctx, "No Trip Exist!!", Toast.LENGTH_LONG).show();
-                    progressDialog.dismiss();
+                    //progressDialog.dismiss();
                 }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                progressDialog.dismiss();
+                //progressDialog.dismiss();
             }
         });
 
