@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="192dp"
+    android:background="@android:color/white"
+    android:padding="16dp"
+    android:theme="@style/AppTheme.NoActionBar"
+    android:orientation="vertical"
+    android:gravity="center|bottom">
+
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/suitcase_manager_header"
+        android:layout_gravity="top|center"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Suitcase Manager"
+        android:textColor="@android:color/black"
+        android:id="@+id/header"
+       />
+
+</LinearLayout>

@@ -6,7 +6,8 @@
     android:id="@+id/activity_item_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="edu.uta.cse5320.suitcasemanager.ItemListActivity">
+    tools:context="edu.uta.cse5320.suitcasemanager.ItemListActivity"
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -81,6 +82,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        app:headerLayout="@layout/nav_header"
         app:itemTextAppearance="@style/TextAppearance.AppCompat.Body1"
         app:menu="@menu/navigation_menu">
     </android.support.design.widget.NavigationView>
