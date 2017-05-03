@@ -110,6 +110,8 @@ public class BagListActivity extends AppCompatActivity {
     File photoFile;
     private static int CAMERA_REQUEST_CODE = 200;
     private TextView bagHeading;
+    private int countValue;
+
 
     final int PERMISSION_REQUEST_LOCATION = 101;
     LocationManager locationManager;
@@ -150,7 +152,7 @@ public class BagListActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         final NavigationView nv = (NavigationView)findViewById(R.id.nv2);
         bagHeading = (TextView) findViewById(R.id.textViewBagHeading);
-
+        countValue = 1;
 
         nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -245,6 +247,17 @@ public class BagListActivity extends AppCompatActivity {
                     System.out.println("Not Inserted!! Inserting Now..");
                     bagHelperDB.addDataCompleteSync(bagData.getId(), bagData.getBagName(), bagData.getItemQuantity(), bagData.getImageUrl1(),bagData.getImageUrl2(),bagData.getImageUrl3());
                 }
+                if(countValue == 1){
+                    ShowcaseConfig config = new ShowcaseConfig();
+                    config.setDelay(300);
+                    MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(BagListActivity.this,"105");
+                    sequence.setConfig(config);
+                    sequence.addSequenceItem(bagHeading,"Click on the Bag Name to Items for the bag.", "GOT IT");
+                    sequence.addSequenceItem(bagHeading,"Long Pressing the Bag Name allows you to Edit & Delete Bags", "GOT IT");
+                    sequence.addSequenceItem(bagHeading,"Pressing the Image once allows you to take the photo", "GOT IT");
+                    sequence.addSequenceItem(bagHeading,"Long pressing the Image shows the Latitude and Longitude as well the actual image", "GOT IT");
+                    sequence.start();
+                }
 
                 /* Adding in List */
                 bagDataList.add(bagData);
@@ -321,15 +334,6 @@ public class BagListActivity extends AppCompatActivity {
         myFab.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 createBags();
-                ShowcaseConfig config = new ShowcaseConfig();
-                config.setDelay(300);
-                MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(BagListActivity.this,"105");
-                sequence.setConfig(config);
-                sequence.addSequenceItem(bagHeading,"Click on the Bag Name to Items for the bag.", "GOT IT");
-                sequence.addSequenceItem(bagHeading,"Long Pressing the Bag Name allows you to Edit & Delete Bags", "GOT IT");
-                sequence.addSequenceItem(bagHeading,"Pressing the Image once allows you to take the photo", "GOT IT");
-                sequence.addSequenceItem(bagHeading,"Long pressing the Image shows the Latitude and Longitude as well the actual image", "GOT IT");
-                sequence.start();
             }
         });
 
