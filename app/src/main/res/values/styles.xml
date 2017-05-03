@@ -21,4 +21,5 @@
         <item name="android:windowBackground">@drawable/background_splash</item>
     </style>
 
+
 </resources>
