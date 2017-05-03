@@ -19,6 +19,7 @@ public class ApplicationConstant {
     public static String bag_val;
     public static String root_val;
 
+
     //Right Menu Strings
     public static final String logout = "Logout";
     public static final String Airline_Information = "Airline Information";
@@ -47,6 +48,13 @@ public class ApplicationConstant {
             "Don't assume that buying the most expensive designer suitcase will get you an upgrade - instead, it's more likely to attract thieves at the airport and on your travels.\n" +
                     "Baggage allowance can vary from airline to airline. Make sure you are aware of your limits before you reach the airport."
     };
+
+    //Location Request Configuration
+    public static long minTime =120000;
+    public static float minDistance =120000;
+    public static double latitude = 0;
+    public static double longitude = 0;
+    public static double accuracy = 0;
 
 
 }

@@ -1,5 +1,6 @@
 package edu.uta.cse5320.suitcasemanager;
 
+import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,19 +8,27 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -98,6 +107,10 @@ public class BagListActivity extends AppCompatActivity {
     File photoFile;
     private static int CAMERA_REQUEST_CODE = 200;
 
+    final int PERMISSION_REQUEST_LOCATION = 101;
+    LocationManager locationManager;
+    LocationListener gpsListener, networklistener;
+
     //List<String> bagArray ;
     String TAG = "Suitcase Manager::BagScreen";
     int i = 1;
@@ -166,6 +179,8 @@ public class BagListActivity extends AppCompatActivity {
         });
 
         checkInternet();
+        checkLocationPermisssion();
+
         //Progress for operations
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Retrieving Your Data..");
@@ -402,5 +417,105 @@ public class BagListActivity extends AppCompatActivity {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver((BroadcastReceiver) br, intentFilter);
+    }
+
+    public void checkLocationPermisssion() {
+        try {
+            if (Build.VERSION.SDK_INT >= 23) {
+                if (ContextCompat.checkSelfPermission(BagListActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(BagListActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                        Snackbar.make(findViewById(R.id.activity_bag_list), "MyContactList requires this permission to locate your contacts", Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                ActivityCompat.requestPermissions(BagListActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_LOCATION);
+                            }
+                        }).show();
+
+                    } else {
+                        ActivityCompat.requestPermissions(BagListActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_LOCATION);
+                    }
+                } else {
+                    startLocationUpdates();
+                }
+            } else {
+                startLocationUpdates();
+            }
+        } catch (Exception e) {
+            Toast.makeText(getBaseContext(), "Error requesting permission", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    private void startLocationUpdates() {
+        if ( Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(getBaseContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission( getBaseContext(),
+                android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        try {
+            locationManager = (LocationManager) getBaseContext().getSystemService(Context.LOCATION_SERVICE);
+            networklistener = new LocationListener() {
+                public void onLocationChanged(Location location) {
+                    ApplicationConstant.latitude = location.getLatitude();
+                    ApplicationConstant.longitude  = location.getLongitude();
+                    ApplicationConstant.accuracy = location.getAccuracy();
+                    //Toast.makeText(ctx, "Location Updated in Background"+ApplicationConstant.latitude ,Toast.LENGTH_LONG).show();
+                    Log.d("Location Update", "Location Updated in Background"+ApplicationConstant.latitude);
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+
+                }
+            };
+
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, ApplicationConstant.minTime, ApplicationConstant.minDistance, networklistener);//2 min, 150meter
+        }
+        catch(Exception e){
+            Toast.makeText(getBaseContext(), "Error, Location not available", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_LOCATION: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    startLocationUpdates();
+                } else {
+                    Toast.makeText(BagListActivity.this, "Geo-Tagging for bag images won't work.", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if ( Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(getBaseContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission( getBaseContext(),
+                android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        try {
+            locationManager.removeUpdates(gpsListener);
+            locationManager.removeUpdates(networklistener);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

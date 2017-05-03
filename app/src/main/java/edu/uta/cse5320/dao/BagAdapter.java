@@ -3,13 +3,13 @@ package edu.uta.cse5320.dao;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -18,7 +18,6 @@ import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -29,7 +28,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -42,14 +40,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import edu.uta.cse5320.suitcasemanager.BagListActivity;
 import edu.uta.cse5320.suitcasemanager.ItemListActivity;
 import edu.uta.cse5320.suitcasemanager.R;
-import edu.uta.cse5320.suitcasemanager.TripListActivity;
+import edu.uta.cse5320.util.ApplicationConstant;
 
-import static android.app.Activity.RESULT_OK;
 import static edu.uta.cse5320.util.ApplicationConstant.root_val;
 import static edu.uta.cse5320.util.ApplicationConstant.trip_val;
 
@@ -74,8 +73,6 @@ public class BagAdapter extends ArrayAdapter<BagData>{
     private static File photoFile;
     private static int CAMERA_REQUEST_CODE = 200;
     private static ProgressDialog progressDialog;
-
-
 
     public BagAdapter(Activity activity, Context context, int textViewResourceId, ArrayList<BagData> bagData, DatabaseReference myDBRef, StorageReference myStorageRef) {
         super(context, textViewResourceId, bagData);
@@ -195,10 +192,10 @@ public class BagAdapter extends ArrayAdapter<BagData>{
                         .load(bagData.getImageUrl1())
                         .fit().centerCrop()
                         .placeholder(R.drawable.ic_add_a_photo_black_48dp)
-                        .error(R.drawable.ic_add_a_photo_black_48dp)
+                        .error(R.drawable.common_google_signin_btn_icon_dark_focused)
                         .into(imageView1);
 
-                imageView1.setOnLongClickListener(new View.OnLongClickListener() {
+                        imageView1.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
                             showImage(bagData.getImageUrl1());
@@ -235,7 +232,7 @@ public class BagAdapter extends ArrayAdapter<BagData>{
                         .load(bagData.getImageUrl2())
                         .fit().centerCrop()
                         .placeholder(R.drawable.ic_add_a_photo_black_48dp)
-                        .error(R.drawable.ic_add_a_photo_black_48dp)
+                        .error(R.drawable.common_google_signin_btn_icon_dark_focused)
                         .into(imageView2);
 
                 imageView2.setOnLongClickListener(new View.OnLongClickListener() {
@@ -251,7 +248,7 @@ public class BagAdapter extends ArrayAdapter<BagData>{
                         .load(bagData.getImageUrl3())
                         .fit().centerCrop()
                         .placeholder(R.drawable.ic_add_a_photo_black_48dp)
-                        .error(R.drawable.ic_add_a_photo_black_48dp)
+                        .error(R.drawable.common_google_signin_btn_icon_dark_focused)
                         .into(imageView3);
 
                 imageView3.setOnLongClickListener(new View.OnLongClickListener() {
@@ -308,6 +305,21 @@ public class BagAdapter extends ArrayAdapter<BagData>{
     }
 
     private void showImage(String imageURI){
+        String localURI = imageURI;
+        localURI = localURI.substring(localURI.lastIndexOf("JPEG_"), localURI.indexOf(".jpg?"));
+        String[] locate = localURI.split("%3D");
+        List<Address> addresses = null;
+
+
+        try {
+            //JPEG_20170503_053731%3D32.7323633%3D-97.1138993%3D-1635670069.jpg?alt=media&token=671b96ec-1ba8-4354-9af8-97b9cbca5fde
+            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+            addresses = geocoder.getFromLocation(Double.parseDouble(locate[1]), Double.parseDouble(locate[2]), 1);
+        }
+        catch (Exception e){
+            addresses = null;
+        }
+
         ImageView image = new ImageView(context);
         Picasso.with(context)
                 .load(imageURI)
@@ -317,17 +329,27 @@ public class BagAdapter extends ArrayAdapter<BagData>{
                 .into(image);
         //
         // image.setImageResource(R.drawable.YOUR_IMAGE_ID);
+        String add = "No Address Found";
+        if(addresses != null){
+            add = addresses.get(0).getAddressLine(0)+"\n"+
+                    addresses.get(0).getAddressLine(1)+"\n"+
+                    addresses.get(0).getAddressLine(2);
 
+//                    currentContact.getStreetAddress() + ", " +
+//                    currentContact.getCity() + ", " +
+//                    currentContact.getState() + " " +
+//                    currentContact.getZipCode();
+        }
         AlertDialog.Builder builder =
                 new AlertDialog.Builder(context).
-                        setMessage("Image").
+                        setView(image).
+                        setMessage("Address : \n"+add+"\n").
                         setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                             }
-                        }).
-                        setView(image);
+                        });
         builder.create().show();
     }
 
@@ -393,6 +415,7 @@ public class BagAdapter extends ArrayAdapter<BagData>{
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        progressDialog.dismiss();
                         // Get a URL to the uploaded content
                         @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
@@ -400,13 +423,14 @@ public class BagAdapter extends ArrayAdapter<BagData>{
                         Map<String, Object> hopperUpdates = new HashMap<String, Object>();
                         hopperUpdates.put(lastTouchedImageView, downloadUrl.toString());
                         imageURLRef.updateChildren(hopperUpdates);
-                        progressDialog.dismiss();
+
                         Toast.makeText(context, "Image Upload Finished...", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
+                        progressDialog.dismiss();
                         Toast.makeText(context, "Upload Failed!", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -416,7 +440,7 @@ public class BagAdapter extends ArrayAdapter<BagData>{
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         //OutputStream outputStream = null;
-        String imageFileName = "JPEG_" + timeStamp + "_";
+        String imageFileName = "JPEG_" + timeStamp + "="+ ApplicationConstant.latitude+"="+ApplicationConstant.longitude+"=";
         File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
@@ -463,5 +487,4 @@ public class BagAdapter extends ArrayAdapter<BagData>{
         sB.setVisibility(s2);
         sBc.setVisibility(s2);
     }
-
 }
