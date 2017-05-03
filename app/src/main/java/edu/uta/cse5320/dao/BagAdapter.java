@@ -119,6 +119,7 @@ public class BagAdapter extends ArrayAdapter<BagData>{
                         //Toast.makeText(context, "Clicked on  - "+ v.getTag().toString(), Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(context, ItemListActivity.class);
                         intent.putExtra(EXTRA_MESSAGE, hashMapBag.get(v.getTag().toString()));
+                        ApplicationConstant.bag_name = bagData.getBagName();
                         context.startActivity(intent);
                     }
                 });

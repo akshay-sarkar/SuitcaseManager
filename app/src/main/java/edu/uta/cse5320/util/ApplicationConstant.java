@@ -16,7 +16,7 @@ public class ApplicationConstant {
     public static String trip_bag_prop = "Bags";
     public static String bag_item_prop = "Items";
     public static String trip_val;
-    public static String bag_val;
+    public static String bag_val,bag_name;
     public static String root_val;
 
 

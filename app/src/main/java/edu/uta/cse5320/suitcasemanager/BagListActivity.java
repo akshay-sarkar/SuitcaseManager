@@ -321,6 +321,15 @@ public class BagListActivity extends AppCompatActivity {
         myFab.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 createBags();
+                ShowcaseConfig config = new ShowcaseConfig();
+                config.setDelay(300);
+                MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(BagListActivity.this,"105");
+                sequence.setConfig(config);
+                sequence.addSequenceItem(bagHeading,"Click on the Bag Name to Items for the bag.", "GOT IT");
+                sequence.addSequenceItem(bagHeading,"Long Pressing the Bag Name allows you to Edit & Delete Bags", "GOT IT");
+                sequence.addSequenceItem(bagHeading,"Pressing the Image once allows you to take the photo", "GOT IT");
+                sequence.addSequenceItem(bagHeading,"Long pressing the Image shows the Latitude and Longitude as well the actual image", "GOT IT");
+                sequence.start();
             }
         });
 
@@ -345,16 +354,6 @@ public class BagListActivity extends AppCompatActivity {
         BagData bagData = new BagData(id, editBagName, editBagItems, "", "", "");
         myDbRef.push().setValue(bagData);
         Toast.makeText(ctx, "Bag Added", Toast.LENGTH_SHORT).show();
-
-        ShowcaseConfig config = new ShowcaseConfig();
-        config.setDelay(500);
-        MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(BagListActivity.this,"105");
-        sequence.setConfig(config);
-        sequence.addSequenceItem(bagHeading,"Click on the Bag Name to Items for the bag.", "GOT IT");
-        sequence.addSequenceItem(bagHeading,"Long Pressing the Bag Name allows you to Edit & Delete Bags", "GOT IT");
-        sequence.addSequenceItem(bagHeading,"Pressing the Image once allows you to take the photo", "GOT IT");
-        sequence.addSequenceItem(bagHeading,"Long pressing the Image shows the Latitude and Longitude as well the actual image", "GOT IT");
-        sequence.start();
     }
     
     private void updateListView(){

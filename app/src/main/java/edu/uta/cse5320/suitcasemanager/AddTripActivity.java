@@ -217,7 +217,7 @@ public class AddTripActivity extends AppCompatActivity{
         }
 
         ShowcaseConfig config = new ShowcaseConfig();
-        config.setDelay(500);
+        config.setDelay(300);
         MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(this, "101");
         sequence.setConfig(config);
         sequence.addSequenceItem(editTextTripName,"Enter a name for your trip", "GOT IT");

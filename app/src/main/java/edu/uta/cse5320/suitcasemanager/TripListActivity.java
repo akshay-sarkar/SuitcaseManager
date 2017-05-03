@@ -79,6 +79,7 @@ public class TripListActivity extends AppCompatActivity {
     AlertDialog alertDialog= null;
     private boolean tipFlag;
     private TextView tripHeading;
+    private int countValue;
 
     @Override
     public void onBackPressed() {
@@ -111,6 +112,7 @@ public class TripListActivity extends AppCompatActivity {
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
         tripHeading = (TextView) findViewById(R.id.textViewTripHeading);
+        countValue = 1;
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -240,15 +242,17 @@ public class TripListActivity extends AppCompatActivity {
                 // Dimiss the dialog box
                 progressDialog.dismiss();
 
-                ShowcaseConfig config = new ShowcaseConfig();
-                config.setDelay(500);
-                MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(TripListActivity.this,"102");
-                sequence.setConfig(config);
-                sequence.addSequenceItem(tripHeading,"Click on the Trip Name to add more bags.", "GOT IT");
-                sequence.addSequenceItem(tripHeading,"The Info Button Gives Details about the Airlines", "GOT IT");
-                sequence.addSequenceItem(tripHeading,"The Delete button deletes the Trip", "GOT IT");
-                sequence.addSequenceItem(tripHeading,"The Edit Button is used to edit the trip details except trip name", "GOT IT");
-                sequence.start();
+                if(countValue==1) {
+                    ShowcaseConfig config = new ShowcaseConfig();
+                    config.setDelay(300);
+                    MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(TripListActivity.this, "102");
+                    sequence.setConfig(config);
+                    sequence.addSequenceItem(tripHeading, "Click on the Trip Name to add more bags.", "GOT IT");
+                    sequence.addSequenceItem(tripHeading, "The Info Button Gives Details about the Airlines", "GOT IT");
+                    sequence.addSequenceItem(tripHeading, "The Delete button deletes the Trip", "GOT IT");
+                    sequence.addSequenceItem(tripHeading, "The Edit Button is used to edit the trip details except trip name", "GOT IT");
+                    sequence.start();
+                }
             }
 
             @Override

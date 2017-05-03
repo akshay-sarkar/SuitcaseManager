@@ -1,14 +1,19 @@
 package edu.uta.cse5320.suitcasemanager;
 
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -54,11 +59,19 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -95,8 +108,7 @@ public class ItemListActivity extends AppCompatActivity {
     private ListView listItemTrip;
     private boolean isEditMode = false;
     private EditText edtItemName, edtItemQuantity;
-    private View v1;
-    private Button btnSave;
+    private Button btnSave,btnViewQR,btnSaveQR,btnShareQR,btnBackQR;
     static ItemAdapter myAdapter;
     private String message;
     private static HashMap<String, String> hmap;
@@ -115,6 +127,7 @@ public class ItemListActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private GoogleApiClient mGoogleApiClient;
+    private String content;
 
     // for font
     @Override
@@ -131,10 +144,10 @@ public class ItemListActivity extends AppCompatActivity {
         final SharedPreferences.Editor editor = getSharedPreferences(ApplicationConstant.MySharedPrefName, MODE_PRIVATE).edit();
 
 
-        v1 = new View(this);
         edtItemName = (EditText) findViewById(R.id.editItemName1);
         edtItemQuantity = (EditText) findViewById(R.id.editItemQuantity1);
         btnSave = (Button) findViewById(R.id.btnItemSave1);
+        btnViewQR = (Button) findViewById(R.id.buttonViewQR);
         // Left Menu / Navigational Layout
         mDrawerLayout = (DrawerLayout) findViewById(R.id.activity_item_list);
         mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.menu_open, R.string.menu_close);
@@ -142,7 +155,6 @@ public class ItemListActivity extends AppCompatActivity {
         mToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         final NavigationView nv = (NavigationView)findViewById(R.id.nv2);
-        final TextView itemHeading = (TextView) findViewById(R.id.textViewItemHeading);
 
         nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -194,7 +206,7 @@ public class ItemListActivity extends AppCompatActivity {
         hmap = new HashMap<String, String>();
 
         mAuth = FirebaseAuth.getInstance();
-        ctx = getApplicationContext();
+        ctx = this.getApplicationContext();
         user = mAuth.getCurrentUser();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -208,6 +220,7 @@ public class ItemListActivity extends AppCompatActivity {
                 if (!dataSnapshot.exists()) {
                     System.out.println(TAG+ " onDataChange -> Empty" );
                     progressDialog.dismiss();
+                    content = "Item Name, \tQuantity;\n";
                 }
             }
             @Override
@@ -221,12 +234,18 @@ public class ItemListActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
                 System.out.println(TAG+ " onChildAdded" + dataSnapshot);
                 progressDialog.dismiss();
+                if(index == 1)
+                    content = "Item Name, \tQuantity;\n";
+
                 ++index;
+
                 ItemData itemData = dataSnapshot.getValue(ItemData.class);
+
+                if(index>1)
+                    content = content + itemData.getItemName() + ", \t" + itemData.getItemQuantity() + ";\n";
                 //Key - Value : TripName - f_id
                 if(!hmap.containsKey(String.valueOf(itemData.getId()))){
                     hmap.put(String.valueOf(itemData.getId()), dataSnapshot.getKey());
-                    System.out.print(hmap);
 
                 /* Inserting data in DB*/
                     int count = itemHelperDB.getListContent(itemData.getId());
@@ -237,6 +256,7 @@ public class ItemListActivity extends AppCompatActivity {
 
                 /* Adding in List */
                     itemDataList.add(itemData);
+                    myAdapter.notifyDataSetChanged();
                     updateListView();
                 }
             }
@@ -244,6 +264,7 @@ public class ItemListActivity extends AppCompatActivity {
             public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {
                 System.out.println(TAG + "onChildChanged" );
                 ItemData itemDat = dataSnapshot.getValue(ItemData.class);
+
 
                 if(itemDat != null){
                     /* Updating data in DB*/
@@ -286,7 +307,6 @@ public class ItemListActivity extends AppCompatActivity {
                             }
                         }
                         updateListView();
-                        myAdapter.notifyDataSetChanged();
                     }
                 }
             }
@@ -325,7 +345,7 @@ public class ItemListActivity extends AppCompatActivity {
                 btnSave.setVisibility(View.VISIBLE);
 
                 ShowcaseConfig config = new ShowcaseConfig();
-                config.setDelay(500);
+                config.setDelay(300);
                 MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(ItemListActivity.this,"107");
                 sequence.setConfig(config);
                 sequence.addSequenceItem(edtItemName,"Enter Value for Item Name in the first text box.", "GOT IT");
@@ -362,6 +382,7 @@ public class ItemListActivity extends AppCompatActivity {
                     edtItemQuantity.setVisibility(View.GONE);
                     btnSave.setVisibility(View.GONE);
                     Toast.makeText(ctx, "Item Added", Toast.LENGTH_SHORT).show();
+                    updateListView();
                 }
             }
         });
@@ -374,8 +395,100 @@ public class ItemListActivity extends AppCompatActivity {
                 .singleUse("106")
                 .show();
 
-    }
+        btnViewQR.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                final Dialog dialog = new Dialog(ItemListActivity.this);
+                dialog.setContentView(R.layout.qr_display);
 
+                TextView textQR = (TextView) dialog.findViewById(R.id.textViewQR);
+                textQR.setText(String.valueOf("QR Code for the Bag : " + ApplicationConstant.bag_name));
+                final ImageView imageQR = (ImageView) dialog.findViewById(R.id.imageViewQR);
+
+                QRCodeWriter writer = new QRCodeWriter();
+                try {
+                    if(content.equals("")){
+                        content = "Sample";
+                    }
+                    BitMatrix bitMatrix = writer.encode(content, BarcodeFormat.QR_CODE, 512, 512);
+                    int width = bitMatrix.getWidth();
+                    int height = bitMatrix.getHeight();
+                    final Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+                    for (int x = 0; x < width; x++) {
+                        for (int y = 0; y < height; y++) {
+                            bmp.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : Color.WHITE);
+                        }
+                    }
+                    imageQR.setImageBitmap(bmp);
+                } catch (WriterException e) {
+                    e.printStackTrace();
+                }
+                    btnSaveQR = (Button) dialog.findViewById(R.id.buttonSaveQR);
+                    btnShareQR = (Button) dialog.findViewById(R.id.buttonShareQR);
+                    btnBackQR = (Button) dialog.findViewById(R.id.buttonBack);
+
+                    btnBackQR.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                btnSaveQR.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        imageQR.buildDrawingCache();
+                        Bitmap bm=imageQR.getDrawingCache();
+                        OutputStream fOut = null;
+                        //Uri outputFileUri;
+                        try {
+                            File root = new File(Environment.getExternalStorageDirectory()
+                                    + File.separator + "Suitcase Manager" + File.separator);
+                            root.mkdirs();
+                            File sdImageMainDirectory = new File(root, ApplicationConstant.bag_name + "QRCode.jpg");
+                            //outputFileUri = Uri.fromFile(sdImageMainDirectory);
+                            fOut = new FileOutputStream(sdImageMainDirectory);
+                            Toast.makeText(ItemListActivity.this, "Image Saved to SD Card", Toast.LENGTH_SHORT).show();
+                        } catch (Exception e) {
+                            Toast.makeText(ItemListActivity.this, "Error occured. Please try again later.", Toast.LENGTH_SHORT).show();
+                        }
+                        try {
+                            bm.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+                            fOut.flush();
+                            fOut.close();
+                        } catch (Exception e) {
+                            Toast.makeText(ItemListActivity.this, "Error occured. Please try again later.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+                btnShareQR.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        imageQR.buildDrawingCache();
+                        Bitmap mBitmap=imageQR.getDrawingCache();
+                        Bitmap icon = mBitmap;
+                        Intent share = new Intent(Intent.ACTION_SEND);
+                        share.setType("image/jpeg");
+                        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                        icon.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                        File f = new File(Environment.getExternalStorageDirectory() + File.separator + "temporary_file.jpg");
+                        try {
+                            f.createNewFile();
+                            FileOutputStream fo = new FileOutputStream(f);
+                            fo.write(bytes.toByteArray());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        share.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/temporary_file.jpg"));
+                        startActivity(Intent.createChooser(share, "Share Image"));
+                    }
+                });
+                dialog.show();
+            }
+        });
+
+    }
 
     private void updateListView(){
         myAdapter.notifyDataSetChanged();

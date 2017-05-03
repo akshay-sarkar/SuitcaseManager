@@ -8,6 +8,7 @@
     <string name="bag_details">Bags</string>
     <string name="title_activity_airline">AirlineActivity</string>
     <string name="app_heading">Suitcase Manager</string>
+    <string name="viewQR"><u>VIEW QR CODE</u></string>
     <string name="airline_prompt">Choose an Airline</string>
     <string-array name="airline_array">
         <item>Air India</item>

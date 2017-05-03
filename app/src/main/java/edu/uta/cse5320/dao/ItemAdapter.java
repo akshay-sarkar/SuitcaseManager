@@ -121,6 +121,7 @@ public class ItemAdapter extends ArrayAdapter<ItemData>{
                         if(!key.isEmpty()){
                             ItemListActivity.myDbRef.child(key).setValue(null);
                             btnDelete.setVisibility(View.GONE);
+                            btnCancel.setVisibility(View.GONE);
                         }
                     }
                 });

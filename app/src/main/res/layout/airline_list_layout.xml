@@ -57,6 +57,7 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/airlineURLLabel"
         android:layout_below="@+id/airlineEmail"
+        android:textColor="#3366BB"
         android:layout_marginTop="10dp"/>
 
     <TextView
@@ -73,7 +74,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/airlinePhoneLabel"
-        android:layout_below="@+id/airlineURLLabel"
+        android:layout_below="@+id/airlineURL"
         android:layout_marginTop="10dp"/>
 
 </RelativeLayout>
