@@ -400,9 +400,7 @@ public class ItemListActivity extends AppCompatActivity {
             public void onClick(View arg0) {
                 final Dialog dialog = new Dialog(ItemListActivity.this);
                 dialog.setContentView(R.layout.qr_display);
-
-                TextView textQR = (TextView) dialog.findViewById(R.id.textViewQR);
-                textQR.setText(String.valueOf("QR Code for the Bag : " + ApplicationConstant.bag_name));
+                dialog.setTitle(ApplicationConstant.bag_name);
                 final ImageView imageQR = (ImageView) dialog.findViewById(R.id.imageViewQR);
                 btnSaveQR = (Button) dialog.findViewById(R.id.buttonSaveQR);
                 btnShareQR = (Button) dialog.findViewById(R.id.buttonShareQR);
@@ -411,7 +409,7 @@ public class ItemListActivity extends AppCompatActivity {
                 QRCodeWriter writer = new QRCodeWriter();
                 try {
                     if(content.equals("")){
-                        content = "Sample";
+                        content = "No Items";
                     }
                     BitMatrix bitMatrix = writer.encode(content, BarcodeFormat.QR_CODE, 512, 512);
                     int width = bitMatrix.getWidth();

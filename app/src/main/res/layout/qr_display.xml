@@ -5,17 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/textViewQR"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="QR For Bag1" />
-
     <ImageView
         android:id="@+id/imageViewQR"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textViewQR"
         android:minWidth="256sp"
         android:minHeight="256sp"
         android:layout_centerHorizontal="true"
